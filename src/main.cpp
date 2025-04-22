@@ -1,0 +1,101 @@
+#include <string>
+#include <cstring>
+
+#include "Window.h"
+#include "bitmap.h"
+
+using namespace std;
+
+// TODO: use GLAD
+
+// TODO: text buffer window control
+// TODO: font convert to inline bitmap buffer
+
+int main()
+{
+	ORIWindow window("origami", 1280, 960);
+	window.setResizeable(false);
+
+	string demo_text = "The quick brown fox jumps over the lazy dog";
+
+	auto size = window.getSize();
+	char* buffer = new char[size[0] * size[1] * 4];
+	
+	int32_t font_width; int32_t font_height;
+	char* font_bitmap;
+	readRGBABitmap("font8x16.bmp", font_bitmap, font_width, font_height);
+	size_t char_width = 8;
+	size_t char_height = 16;
+	size_t char_spacing = 1;
+
+	size_t letter_spacing = 2;
+	size_t line_height = 20;
+
+	while(true)
+	{
+		window.makeActiveContext();
+
+		auto tmp = glfwGetCurrentContext();
+
+		glViewport(0, 0, size[0], size[1]);
+		//glClearColor(0.004f, 0.510f, 0.506f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT);
+
+		for (size_t i = 0; i < size[1] * size[0] * 4; i += 4)
+		{
+			((uint32_t*)(buffer + i))[0] = 0xFF808000;
+		}
+
+		size_t x_pos = 0;
+		size_t y_pos = 0;
+		for (char c : demo_text)
+		{
+			size_t font_x = (c % 32) * (char_width + (2 * char_spacing)) + char_spacing;
+			size_t font_y = (c / 32) * (char_height + (2 * char_spacing)) + char_spacing;
+
+			size_t buffer_offset = (x_pos + ((size[1] - y_pos - 1) * size[0])) * 4;
+			size_t font_offset = (font_x + ((font_height - font_y - 1) * font_width)) * 4;
+			for (size_t j = 0; j < char_height; j++)
+			{
+				for (size_t i = 0; i < char_width; i++)
+				{
+					if (font_bitmap[font_offset + (4 * i)] != 0x00)
+						((uint32_t*)(buffer + (buffer_offset + (4 * i))))[0] = 0xFF151515;
+					// else
+						// ((uint32_t*)(buffer + (buffer_offset + (4 * i))))[0] = 0xFF0000FF;
+				}
+				buffer_offset -= size[0] * 4;
+				font_offset -= font_width * 4;
+			}
+
+			// for (size_t i = 0; i < char_height; i++)
+			// {
+			// 	size_t buffer_offset = x_pos + ((size[1] - (y_pos + i)) * size[0]);
+			// 	size_t font_offset = font_x + ((font_height - (font_y + i)) * font_width);
+			// 	memcpy(buffer + (buffer_offset * 4), font_bitmap + (font_offset * 4), char_width * 4);
+			// }
+
+			x_pos += char_width + letter_spacing;
+		}
+
+		glRasterPos2f(-1.0f, -1.0f);
+		glDrawPixels(size[0], size[1], GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+		// glColor3f(0.8f, 0.8f, 0.8f);
+		// glLineWidth(2.0f);
+		// glBegin(GL_LINES);
+
+		// glVertex2f(0.0f, 0.0f);
+		// glVertex2f(1.0f, 1.0f);
+		// glVertex2f(1.0f, 1.0f);
+		// glVertex2f(-1.0f, 0.5f);
+
+		
+
+		glEnd();
+
+		window.swapBuffers();
+		glfwPollEvents();
+	}
+
+	return 0;
+}

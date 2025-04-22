@@ -43,11 +43,6 @@ array<size_t, 2> ORIWindow::getSize()
     return array<size_t, 2>({ static_cast<size_t>(w), static_cast<size_t>(h) });
 }
 
-string ORIWindow::getTitle()
-{
-    return string(glfwGetWindowTitle(window));
-}
-
 void ORIWindow::swapBuffers()
 {
     glfwSwapBuffers(window);

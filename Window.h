@@ -19,7 +19,6 @@ public:
 	void setSize(size_t w, size_t h);
 
 	std::array<size_t, 2> getSize();
-	std::string getTitle();
 
 	// TODO: context and swapping funcs, drawing to buffer
 	void swapBuffers();
