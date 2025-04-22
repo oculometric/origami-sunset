@@ -4,6 +4,9 @@
 #include "Window.h"
 #include "bitmap.h"
 
+#define STUI_IMPLEMENTATION
+#include "stui/inc/stui.h"
+
 using namespace std;
 
 // TODO: use GLAD
@@ -31,6 +34,9 @@ int main()
 	size_t letter_spacing = 2;
 	size_t line_height = 20;
 
+	stui::Banner b("welcome STUI, you've been sorely missed");
+	stui::BorderedBox bb(&b, "");
+
 	while(true)
 	{
 		window.makeActiveContext();
@@ -38,8 +44,10 @@ int main()
 		auto tmp = glfwGetCurrentContext();
 
 		glViewport(0, 0, size[0], size[1]);
-		//glClearColor(0.004f, 0.510f, 0.506f, 1.0f);
-		//glClear(GL_COLOR_BUFFER_BIT);
+
+		stui::Tixel* charbuf = nullptr;
+		stui::Coordinate buf_size = stui::Coordinate{ (int)(size[0] / (char_width + letter_spacing)), (int)(size[1] / line_height) };
+		stui::Renderer::renderToBuffer(&bb, buf_size, charbuf);
 
 		for (size_t i = 0; i < size[1] * size[0] * 4; i += 4)
 		{
@@ -48,8 +56,12 @@ int main()
 
 		size_t x_pos = 0;
 		size_t y_pos = 0;
-		for (char c : demo_text)
+		for (size_t c_ind = 0; c_ind < buf_size.x * buf_size.y; c_ind++)
 		{
+			char c = charbuf[c_ind].character;
+			x_pos = (c_ind % buf_size.x) * (char_width + letter_spacing);
+			y_pos = (c_ind / buf_size.x) * line_height;
+
 			size_t font_x = (c % 32) * (char_width + (2 * char_spacing)) + char_spacing;
 			size_t font_y = (c / 32) * (char_height + (2 * char_spacing)) + char_spacing;
 
@@ -61,37 +73,20 @@ int main()
 				{
 					if (font_bitmap[font_offset + (4 * i)] != 0x00)
 						((uint32_t*)(buffer + (buffer_offset + (4 * i))))[0] = 0xFF151515;
-					// else
-						// ((uint32_t*)(buffer + (buffer_offset + (4 * i))))[0] = 0xFF0000FF;
 				}
 				buffer_offset -= size[0] * 4;
 				font_offset -= font_width * 4;
 			}
-
-			// for (size_t i = 0; i < char_height; i++)
-			// {
-			// 	size_t buffer_offset = x_pos + ((size[1] - (y_pos + i)) * size[0]);
-			// 	size_t font_offset = font_x + ((font_height - (font_y + i)) * font_width);
-			// 	memcpy(buffer + (buffer_offset * 4), font_bitmap + (font_offset * 4), char_width * 4);
-			// }
 
 			x_pos += char_width + letter_spacing;
 		}
 
 		glRasterPos2f(-1.0f, -1.0f);
 		glDrawPixels(size[0], size[1], GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-		// glColor3f(0.8f, 0.8f, 0.8f);
-		// glLineWidth(2.0f);
-		// glBegin(GL_LINES);
-
-		// glVertex2f(0.0f, 0.0f);
-		// glVertex2f(1.0f, 1.0f);
-		// glVertex2f(1.0f, 1.0f);
-		// glVertex2f(-1.0f, 0.5f);
-
-		
-
 		glEnd();
+
+		delete[] charbuf;
+		charbuf = nullptr;
 
 		window.swapBuffers();
 		glfwPollEvents();
