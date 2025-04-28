@@ -1,5 +1,6 @@
 #include <string>
 #include <cstring>
+#include <map>
 
 #include "Window.h"
 #include "bitmap.h"
@@ -9,6 +10,12 @@
 
 using namespace std;
 
+map<uint32_t, char> high_char_map
+{
+	// TODO: this will allow us to convert select UTF-8 characters to our limited ASCII codepage
+	{ }
+};
+
 // TODO: use GLAD
 
 // TODO: text buffer window control
@@ -16,7 +23,7 @@ using namespace std;
 
 int main()
 {
-	ORIWindow window("origami", 1280, 960);
+	ORIWindow window("origami", 320, 170);
 	window.setResizeable(false);
 
 	string demo_text = "The quick brown fox jumps over the lazy dog";
@@ -31,8 +38,8 @@ int main()
 	size_t char_height = 16;
 	size_t char_spacing = 1;
 
-	size_t letter_spacing = 2;
-	size_t line_height = 20;
+	size_t letter_spacing = 0;
+	size_t line_height = 16;
 
 	stui::Banner b("welcome STUI, you've been sorely missed");
 	stui::BorderedBox bb(&b, "");
@@ -58,15 +65,30 @@ int main()
 		size_t y_pos = 0;
 		for (size_t c_ind = 0; c_ind < buf_size.x * buf_size.y; c_ind++)
 		{
-			char c = charbuf[c_ind].character;
+			uint32_t hc = charbuf[c_ind].character;
+			char c = hc > 255 ? 255 : hc;
+
 			x_pos = (c_ind % buf_size.x) * (char_width + letter_spacing);
 			y_pos = (c_ind / buf_size.x) * line_height;
+			size_t buffer_offset = (x_pos + ((size[1] - y_pos - 1) * size[0])) * 4;
+
+			if (hc > 255)
+			{
+				for (size_t j = 0; j < char_height; j++)
+				{
+					for (size_t i = 0; i < char_width; i++)
+					{
+						((uint32_t*)(buffer + (buffer_offset + (4 * i))))[0] = 0xFF151515;
+					}
+					buffer_offset -= size[0] * 4;
+				}
+				continue;
+			}
 
 			size_t font_x = (c % 32) * (char_width + (2 * char_spacing)) + char_spacing;
 			size_t font_y = (c / 32) * (char_height + (2 * char_spacing)) + char_spacing;
-
-			size_t buffer_offset = (x_pos + ((size[1] - y_pos - 1) * size[0])) * 4;
 			size_t font_offset = (font_x + ((font_height - font_y - 1) * font_width)) * 4;
+
 			for (size_t j = 0; j < char_height; j++)
 			{
 				for (size_t i = 0; i < char_width; i++)
@@ -78,7 +100,7 @@ int main()
 				font_offset -= font_width * 4;
 			}
 
-			x_pos += char_width + letter_spacing;
+			// x_pos += char_width + letter_spacing;
 		}
 
 		glRasterPos2f(-1.0f, -1.0f);
