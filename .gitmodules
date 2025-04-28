@@ -1,3 +1,6 @@
 [submodule "stui"]
 	path = stui
 	url = https://github.com/oculometric/stui
+[submodule "HTTPRequest"]
+	path = HTTPRequest
+	url = https://github.com/elnormous/HTTPRequest
