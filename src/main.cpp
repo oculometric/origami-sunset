@@ -2,11 +2,11 @@
 #include <cstring>
 #include <map>
 
-#include "Window.h"
-#include "bitmap.h"
+#include "../Window.h"
+#include "../bitmap.h"
 
 #define STUI_IMPLEMENTATION
-#include "stui/inc/stui.h"
+#include "../stui/inc/stui.h"
 
 using namespace std;
 
