@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="font.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

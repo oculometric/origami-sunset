@@ -1,4 +1,4 @@
-#include "bitmap.h"
+#include "../bitmap.h"
 
 // NOTE: borrowed from planetarium
 
