@@ -284,3 +284,7 @@ void ORIScreen::setRegionDirty(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
     if ((y + h - 1 > dirty_region_ey) || (dirty_region_ey == UINT16_MAX))
         dirty_region_ey = min(y + h - 1, framebuffer_height - 1);
 }
+
+uint16_t ORIScreen::getWidth() { return framebuffer_width; }
+
+uint16_t ORIScreen::getHeight() { return framebuffer_height; }

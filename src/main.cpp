@@ -2,14 +2,11 @@
 #include <SPI.h>
 #include "../inc/screen.h"
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 170
-
-uint16_t* back_buffer = nullptr;
-
 void setup()
 {
     pinMode(21, OUTPUT);
+    digitalWrite(21, HIGH);
+
     Serial.begin(115200);
     Serial.println("Begin!");
 
@@ -28,33 +25,56 @@ int16_t box_sy = 16;
 int16_t box_dx = 1;
 int16_t box_dy = 1;
 
+int flash_counter = 0;
+
 void loop()
 {
+    if (flash_counter == 0)
+        digitalWrite(21, HIGH);
+    if (flash_counter >= 0)
+        flash_counter--;
+
     int16_t old_x = box_x;
     int16_t old_y = box_y;
 
     box_x += box_dx;
     box_y += box_dy;
 
-    if (box_x >= SCREEN_WIDTH - box_sx - 1)
+    int hits_this_frame = 0;
+
+    if (box_x >= ORIScreen::getWidth() - box_sx - 1)
     {
-        box_x = SCREEN_WIDTH - box_sx - 1;
+        box_x = ORIScreen::getWidth() - box_sx - 1;
         box_dx = -1;
+
+        hits_this_frame++;
     }
     if (box_x <= 0)
     {
         box_x = 0;
         box_dx = 1;
+
+        hits_this_frame++;
     }
-    if (box_y >= SCREEN_HEIGHT - box_sy - 1)
+    if (box_y >= ORIScreen::getHeight() - box_sy - 1)
     {
-        box_y = SCREEN_HEIGHT - box_sy - 1;
+        box_y = ORIScreen::getHeight() - box_sy - 1;
         box_dy = -1;
+
+        hits_this_frame++;
     }
     if (box_y <= 0)
     {
         box_y = 0;
         box_dy = 1;
+
+        hits_this_frame++;
+    }
+
+    if (hits_this_frame > 0)
+    {
+        digitalWrite(21, LOW);
+        flash_counter = hits_this_frame == 1 ? 15 : 200;
     }
 
     ORIScreen::fillPixels(old_x, old_y, box_sx, box_sy, 0xFFFF);

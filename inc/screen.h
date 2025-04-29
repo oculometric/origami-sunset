@@ -30,4 +30,7 @@ public:
 
     static void blit();
     static void setRegionDirty(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+
+    static uint16_t getWidth();
+    static uint16_t getHeight();
 };
