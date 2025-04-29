@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "array": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/mnt/REPOSITORY/Repository-of-Things/Coding/C/origami-sunset/HTTPRequest"
 }
