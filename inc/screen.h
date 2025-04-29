@@ -1,0 +1,33 @@
+#pragma once
+
+#include <Arduino.h>
+#include <stdint.h>
+
+class ORIScreen
+{
+private:
+    static const uint8_t backlight_pin = A2;
+    static const uint8_t chip_select_pin = SS;
+    static const uint8_t reset_pin = D4;
+    static const uint8_t data_command_switch_pin = D3;
+
+    inline ORIScreen() { }
+
+    static void reset();
+    static inline void setActive(bool active) { digitalWrite(chip_select_pin, active ? LOW : HIGH); }
+    static inline void setCommandMode() { digitalWrite(data_command_switch_pin, LOW); }
+    static inline void setDataMode() { digitalWrite(data_command_switch_pin, HIGH); }
+    static void sendCommand(uint8_t command);
+    static void sendDataByte(uint8_t data);
+    static void sendDataWord(uint16_t data);
+
+public:
+    static void initialise();
+    static void setBacklightBrightness(uint8_t brightness);
+    static void setPixel(uint16_t x, uint16_t y, uint16_t colour);
+    static void fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour);
+    static void clear(uint16_t colour);
+
+    static void blit();
+    static void setRegionDirty(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+};
