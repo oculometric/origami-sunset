@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+class ORIFont;
+
 class ORIScreen
 {
 private:
@@ -34,6 +36,7 @@ public:
     static void setBacklightBrightness(uint8_t brightness);
     static void setPixel(uint16_t x, uint16_t y, uint16_t colour);
     static void fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour);
+    static void drawCharacter(uint16_t x, uint16_t y, char c, uint16_t colour, const ORIFont* font);
     static void clear(uint16_t colour);
 
     static void blit();

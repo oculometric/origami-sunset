@@ -9,6 +9,7 @@
 #endif
 
 #include "screen.h"
+#include "font8x16.h"
 
 void setup()
 {
@@ -95,8 +96,21 @@ void loop()
         flash_counter = hits_this_frame == 1 ? 15 : 200;
     }
 
-    ORIScreen::fillPixels(old_x, old_y, box_sx, box_sy, 0xFFFF);
+    ORIScreen::fillPixels(old_x, old_y, box_sx + 200, box_sy, 0xFFFF);
     ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, 0b1111100000000000);
+    ORIScreen::drawCharacter(box_x, box_y, 'A', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 9, box_y, 'L', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 18, box_y, 'B', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 27, box_y, 'E', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 36, box_y, 'D', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 45, box_y, 'O', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 54, box_y, ' ', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 63, box_y, 'I', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 72, box_y, 'S', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 81, box_y, ' ', 0x0000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 90, box_y, 'G', 0b1111100000000000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 99, box_y, 'A', 0b0000011111100000, &terminal_8x16_font);
+    ORIScreen::drawCharacter(box_x + 108, box_y, 'Y', 0b0000000000011111, &terminal_8x16_font);
 
     ORIScreen::blit();
 #if defined(ARDUINO)

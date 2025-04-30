@@ -33,9 +33,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="src\oldmain._cpp">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

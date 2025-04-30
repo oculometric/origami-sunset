@@ -1,4 +1,4 @@
-#include "../inc/screen.h"
+#include "screen.h"
 
 #if defined(ARDUINO)
 #include <SPI.h>
@@ -11,6 +11,8 @@
 #define GL_UNSIGNED_SHORT_5_6_5 0x8363
 #endif
 #endif
+
+#include "font.h"
 
 #ifndef min
 #define min(a,b) ((a < b) ? a : b)
@@ -221,8 +223,10 @@ void ORIScreen::fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint1
     if (w == 0 || h == 0)
         return;
 
-    if (x + w > framebuffer_width || y + h > framebuffer_height)
-        return;
+    if (x + w > framebuffer_width)
+        w = framebuffer_width - x;
+    if (y + h > framebuffer_height)
+        h = framebuffer_height - y;
 
     // fill the area
     size_t row_start = x + (y * framebuffer_width);
@@ -242,6 +246,30 @@ void ORIScreen::fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint1
     setRegionDirty(x, y, w, h);
 }
 
+void ORIScreen::drawCharacter(uint16_t x, uint16_t y, char c, uint16_t colour, const ORIFont* font)
+{
+    uint8_t* glyph = font->getGlyphData(c);
+    uint32_t glyph_width = font->getGlyphWidth();
+    uint32_t glyph_height = font->getGlyphHeight();
+    uint32_t glyph_pitch = font->getGlyphDataSize() / glyph_height;
+
+    uint32_t glyph_offset = 0;
+    // TODO: this can be way more efficient
+    for(int32_t j = y + glyph_height - 1; j >= y; j--)
+    {
+        int32_t x_coord = 0;
+        for(int32_t i = x; i < glyph_width + x; i++)
+        {
+            bool set = (glyph[glyph_offset] >> (7 - (x_coord % 8))) & 0b1;
+            if (set)
+                setPixel(i, j, colour);
+
+            if (x_coord % 8 == 7 || x_coord == glyph_width - 1)
+                glyph_offset++;
+            x_coord++;
+        }
+    }
+}
 
 void ORIScreen::clear(uint16_t colour)
 {

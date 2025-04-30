@@ -148,9 +148,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\screen.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="src\oldmain._cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
