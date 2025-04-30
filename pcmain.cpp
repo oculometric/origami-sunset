@@ -1,10 +1,37 @@
-#include "../bitmap.h"
-
-// NOTE: borrowed from planetarium
-
+#include <string>
+#include <iostream>
 #include <fstream>
 
 using namespace std;
+
+#pragma pack(push)
+#pragma pack(1)
+struct PTBitmapHeader
+{
+	uint8_t sig_0 = 'B';
+	uint8_t sig_1 = 'M';
+	uint32_t size_bytes = 0;
+	uint16_t res_0 = 'P';
+	uint16_t res_1 = 'T';
+	uint32_t data_offset = 0;
+};
+
+struct PTBitmapInfoHeader
+{
+	uint32_t header_size = 40;
+	int32_t bitmap_width = 0;
+	int32_t bitmap_height = 0;
+	uint16_t planes = 1;
+	uint16_t bits_per_pixel = 32;
+	uint32_t compresion = 0;
+	uint32_t data_length = 0;
+	int32_t ppm_horizontal = 144;
+	int32_t ppm_vertical = 144;
+	uint32_t colour_palette_count = 0;
+	uint32_t important_colours = 0;
+};
+#pragma pack(pop)
+
 
 bool writeRGBABitmap(string path, char* data, int32_t width, int32_t height)
 {
@@ -29,7 +56,7 @@ bool writeRGBABitmap(string path, char* data, int32_t width, int32_t height)
     info_header.bits_per_pixel = 32;
     info_header.compresion = 0;
     info_header.data_length = (width * height * 4);
-    
+
     // write header, followed by info header, followed by data
     file.write((char*)&header, sizeof(PTBitmapHeader));
     file.write((char*)&info_header, sizeof(PTBitmapInfoHeader));
@@ -142,4 +169,54 @@ bool readRGBABitmap(string path, char*& data, int32_t& width, int32_t& height)
         return true;
     }
     else return false;
+}
+
+int main()
+{
+	int32_t font_width; int32_t font_height;
+	char* font_bitmap;
+	readRGBABitmap("font8x16.bmp", font_bitmap, font_width, font_height);
+	size_t char_width = 8;
+	size_t char_height = 16;
+	size_t char_spacing = 1;
+
+	size_t letter_spacing = 0;
+	size_t line_height = 16;
+
+	for (size_t c = 0; c < 256; c++)
+	{
+		size_t font_x = (c % 32) * (char_width + (2 * char_spacing)) + char_spacing;
+		size_t font_y = (c / 32) * (char_height + (2 * char_spacing)) + char_spacing;
+		size_t font_offset = (font_x + ((font_height - font_y - 1) * font_width)) * 4;
+
+		bool is_null_char = true;
+		std::string s = "";
+		for (size_t j = 0; j < char_height; j++)
+		{
+			s += "0b";
+			for (size_t i = 0; i < char_width; i++)
+			{
+				if (font_bitmap[font_offset + (4 * i)] != 0x00)
+				{
+					s += '1';
+					is_null_char = false;
+				}
+				else
+					s += '0';
+			}
+			s += ",\n";
+			font_offset -= font_width * 4;
+		}
+		if (is_null_char)
+		{
+			for (size_t j = 0; j < char_height; j++)
+			{
+				s[(j * 12) + 11] = ' ';
+			}
+		}
+		std::cout << "// 0x" << std::hex << c << ", aka '" << (char)c << "'" << std::endl;
+		std::cout << s << std::endl << std::endl;
+	}
+
+	return 0;
 }

@@ -1,6 +1,20 @@
 {
     "files.associations": {
-        "array": "cpp"
-    },
+		"array": "cpp",
+		"deque": "cpp",
+		"format": "cpp",
+		"initializer_list": "cpp",
+		"list": "cpp",
+		"queue": "cpp",
+		"random": "cpp",
+		"regex": "cpp",
+		"stack": "cpp",
+		"utility": "cpp",
+		"vector": "cpp",
+		"xhash": "cpp",
+		"xstring": "cpp",
+		"xtree": "cpp",
+		"xutility": "cpp"
+	},
     "cmake.sourceDirectory": "/mnt/REPOSITORY/Repository-of-Things/Coding/C/origami-sunset/HTTPRequest"
 }

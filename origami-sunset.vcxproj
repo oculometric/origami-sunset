@@ -140,13 +140,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="font.h" />
-    <ClInclude Include="Window.h" />
+    <ClCompile Include="pcmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\bitmap.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Window.cpp" />
+    <ClInclude Include="inc\font.h" />
+    <ClInclude Include="inc\font8x16.h" />
+    <ClInclude Include="inc\screen.h" />
+    <ClInclude Include="inc\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
