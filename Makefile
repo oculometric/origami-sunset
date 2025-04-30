@@ -1,15 +1,14 @@
 SRC_DIR			:= src/
 BIN_DIR			:= bin/
 OBJ_DIR			:= bin/obj/
-SHR_DIR			:= shr/
 
 CC				:= g++
-CC_FLAGS		:= -std=c++20 -g -O0 -I . -Wall
+CC_FLAGS		:= -std=c++11 -g -O0 -I inc -Wall -D OPENGL
 CC_INCLUDE		:= 
 
 LD				:= g++
 LD_FLAGS		:= -g
-LD_INCLUDE		:= -lpthread -lglfw -lvulkan -ldl -lX11  -lXrandr -lXi -lGL
+LD_INCLUDE		:= -lpthread -lglfw -ldl -lX11  -lXrandr -lXi -lGL
 
 DEP_FLAGS		:= -MMD -MP
 

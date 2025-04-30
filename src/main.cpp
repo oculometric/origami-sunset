@@ -1,35 +1,25 @@
-#if defined(ARDUINO)
-#include <Arduino.h>
-#include <SPI.h>
-#endif
 #if defined(OPENGL)
-#include <thread>
-#include <iostream>
 #include <GLFW/glfw3.h>
 #endif
 
 #include "screen.h"
+#include "compat.h"
+#include "log.h"
 #include "font8x16.h"
 
 void setup()
 {
-#if defined(ARDUINO)
     pinMode(21, OUTPUT);
     digitalWrite(21, HIGH);
 
-    Serial.begin(115200);
-    Serial.println("Begin!");
-#endif
+    ORISerial::initialise();
+    ORISerial::printLn("Begin!");
+
     // initialise display control
     ORIScreen::initialise();
     ORIScreen::setBacklightBrightness(32);
 
-#if defined(ARDUINO)
-    Serial.println("Hello, world!");
-#endif
-#if defined(OPENGL)
-    std::cout << "Hello, world!" << std::endl;
-#endif
+    ORISerial::printLn("Hello, cassette!");
 }
 
 int16_t box_x = 0;
@@ -45,9 +35,7 @@ int flash_counter = 0;
 void loop()
 {
     if (flash_counter == 0)
-#if defined(ARDUINO)
         digitalWrite(21, HIGH);
-#endif
     if (flash_counter >= 0)
         flash_counter--;
 
@@ -90,9 +78,7 @@ void loop()
 
     if (hits_this_frame > 0)
     {
-#if defined(ARDUINO)
         digitalWrite(21, LOW);
-#endif
         flash_counter = hits_this_frame == 1 ? 15 : 200;
     }
 
@@ -113,12 +99,9 @@ void loop()
     ORIScreen::drawCharacter(box_x + 108, box_y, 'Y', 0b0000000000011111, &terminal_8x16_font);
 
     ORIScreen::blit();
-#if defined(ARDUINO)
     delay(1);
-#endif
 #if defined(OPENGL)
     glfwPollEvents();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
 #endif
 }
 
