@@ -14,7 +14,10 @@
 		"xhash": "cpp",
 		"xstring": "cpp",
 		"xtree": "cpp",
-		"xutility": "cpp"
+		"xutility": "cpp",
+		"algorithm": "cpp",
+		"chrono": "cpp",
+		"limits": "cpp"
 	},
     "cmake.sourceDirectory": "/mnt/REPOSITORY/Repository-of-Things/Coding/C/origami-sunset/HTTPRequest"
 }

@@ -1,18 +1,25 @@
 #pragma once
 
+#if defined(ARDUINO)
 #include <Arduino.h>
+#endif
+
 #include <stdint.h>
 
 class ORIScreen
 {
 private:
+#if defined(ARDUINO)
     static const uint8_t backlight_pin = A2;
     static const uint8_t chip_select_pin = SS;
     static const uint8_t reset_pin = D4;
     static const uint8_t data_command_switch_pin = D3;
+#endif
 
     inline ORIScreen() { }
 
+private:
+#if defined(ARDUINO)
     static void reset();
     static inline void setActive(bool active) { digitalWrite(chip_select_pin, active ? LOW : HIGH); }
     static inline void setCommandMode() { digitalWrite(data_command_switch_pin, LOW); }
@@ -20,6 +27,7 @@ private:
     static void sendCommand(uint8_t command);
     static void sendDataByte(uint8_t data);
     static void sendDataWord(uint16_t data);
+#endif
 
 public:
     static void initialise();

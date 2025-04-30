@@ -1,6 +1,20 @@
 #include "../inc/screen.h"
 
+#if defined(ARDUINO)
 #include <SPI.h>
+#endif
+
+#if defined(OPENGL)
+#include <GLFW/glfw3.h>
+// janky fix for windows
+#ifndef GL_UNSIGNED_SHORT_5_6_5
+#define GL_UNSIGNED_SHORT_5_6_5 0x8363
+#endif
+#endif
+
+#ifndef min
+#define min(a,b) ((a < b) ? a : b)
+#endif
 
 static uint16_t* framebuffer = nullptr;
 static uint16_t framebuffer_width;
@@ -9,6 +23,10 @@ static uint16_t dirty_region_sx;
 static uint16_t dirty_region_sy;
 static uint16_t dirty_region_ex;
 static uint16_t dirty_region_ey;
+
+#if defined(OPENGL)
+static GLFWwindow* window;
+#endif
 
 void ORIScreen::initialise()
 {
@@ -20,14 +38,12 @@ void ORIScreen::initialise()
     framebuffer = new uint16_t[framebuffer_width * framebuffer_height];
     clear(0xFFFF);
 
+#if defined(ARDUINO)
     // initialise the control pins
     pinMode(backlight_pin, OUTPUT);
     pinMode(chip_select_pin, OUTPUT);
     pinMode(reset_pin, OUTPUT);
     pinMode(data_command_switch_pin, OUTPUT);
-
-    // set backlight to full brightness
-    setBacklightBrightness(255);
 
     // initialise the SPI interface
     SPI.setDataMode(SPI_MODE3);
@@ -118,10 +134,23 @@ void ORIScreen::initialise()
     sendCommand(0x11);
     delay(120);
     sendCommand(0x29);
+#endif
 
+#if defined(OPENGL)
+	glfwInit();
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	window = glfwCreateWindow(framebuffer_width, framebuffer_height, "origami sunset preview", nullptr, nullptr);
+    glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
+#endif
+
+	// set backlight to full brightness
+    setBacklightBrightness(255);
     blit();
 }
 
+#if defined(ARDUINO)
 void ORIScreen::reset()
 {
     setActive(true);
@@ -155,10 +184,13 @@ void ORIScreen::sendDataWord(uint16_t data)
     SPI.transfer16(data);
     setActive(false);
 }
+#endif
 
 void ORIScreen::setBacklightBrightness(uint8_t brightness)
 {
+#if defined(ARDUINO)
     analogWrite(backlight_pin, brightness);
+#endif
 }
 
 void ORIScreen::setPixel(uint16_t x, uint16_t y, uint16_t colour)
@@ -224,7 +256,8 @@ void ORIScreen::clear(uint16_t colour)
 
 void ORIScreen::blit()
 {
-    setActive(true);
+#if defined(ARDUINO)
+	setActive(true);
     
     // set cursor start & end X command
     setCommandMode();
@@ -264,6 +297,21 @@ void ORIScreen::blit()
     }
     
     setActive(false);
+#endif
+
+#if defined(OPENGL)
+	glfwMakeContextCurrent(window);
+	glViewport(0, 0, framebuffer_width, framebuffer_height);
+
+    // under OpenGL things work a little differently and we 
+    // have to just draw the whole buffer (ignoring the dirty region).
+    // i think this is just as performant as doing individual rows actually...
+    glRasterPos2f(-1.0f, -1.0f);
+    glDrawPixels(framebuffer_width, framebuffer_height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, framebuffer);
+	
+	glfwSwapBuffers(window);
+    glfwSwapInterval(1);
+#endif
 
     // reset dirty region
     dirty_region_sx = UINT16_MAX;
