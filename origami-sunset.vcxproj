@@ -145,6 +145,7 @@
     <ClInclude Include="inc\screen.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\log.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\screen.cpp" />
   </ItemGroup>

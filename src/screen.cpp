@@ -17,6 +17,9 @@
 #ifndef min
 #define min(a,b) ((a < b) ? a : b)
 #endif
+#ifndef max
+#define max(a,b) ((a > b) ? a : b)
+#endif
 
 static uint16_t* framebuffer = nullptr;
 static uint16_t framebuffer_width;
@@ -246,29 +249,55 @@ void ORIScreen::fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint1
     setRegionDirty(x, y, w, h);
 }
 
-void ORIScreen::drawCharacter(uint16_t x, uint16_t y, char c, uint16_t colour, const ORIFont* font)
+void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour, const ORIFont* font)
 {
-    uint8_t* glyph = font->getGlyphData(c);
     uint32_t glyph_width = font->getGlyphWidth();
     uint32_t glyph_height = font->getGlyphHeight();
     uint32_t glyph_pitch = font->getGlyphDataSize() / glyph_height;
 
-    uint32_t glyph_offset = 0;
-    // TODO: this can be way more efficient
-    for(int32_t j = y + glyph_height - 1; j >= y; j--)
-    {
-        int32_t x_coord = 0;
-        for(int32_t i = x; i < glyph_width + x; i++)
-        {
-            bool set = (glyph[glyph_offset] >> (7 - (x_coord % 8))) & 0b1;
-            if (set)
-                setPixel(i, j, colour);
+    int32_t top_clipping = max(0, (int32_t)(y + glyph_height) - (int32_t)framebuffer_height);
 
-            if (x_coord % 8 == 7 || x_coord == glyph_width - 1)
-                glyph_offset++;
-            x_coord++;
+    int32_t pixel_x = x;
+    int32_t pixel_y_top = (y + glyph_height - 1) - top_clipping;
+    int32_t pixel_y = pixel_y_top;
+    uint32_t cnum = 0;
+    for (size_t ci = 0; t[ci] != 0x0; ci++)
+    {
+        char c = t[ci];
+        cnum++;
+        uint8_t* glyph = font->getGlyphData(c);
+
+        int32_t pixel_x_left = pixel_x;
+        uint32_t glyph_off = 0;
+        for (uint32_t j = top_clipping; j < glyph_height; j++)
+        {
+            uint32_t counter = pixel_x + (pixel_y * framebuffer_width);
+            for (uint32_t i = 0; i < glyph_pitch; i++)
+            {
+                uint8_t value = glyph[glyph_off];
+                // TODO: clipping of X value to protect the framebuffer
+                uint8_t comparator = 0b10000000;
+                for (uint8_t _ = 0; _ < 8; _++)
+                {
+                    if (value & comparator)
+                        framebuffer[counter] = colour;
+                    pixel_x++;
+                    counter++;
+                    comparator = comparator >> 1;
+                }
+
+                glyph_off++;
+            }
+            glyph_off += top_clipping * glyph_pitch;
+
+            pixel_x = pixel_x_left;
+            pixel_y--;
         }
+        pixel_y = pixel_y_top;
+        pixel_x += glyph_width;
+        // TODO: char spacing pixel_x += font->getCharSpacing();
     }
+    setRegionDirty(x, y, glyph_width * cnum, glyph_height);
 }
 
 void ORIScreen::clear(uint16_t colour)

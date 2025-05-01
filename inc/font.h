@@ -7,8 +7,11 @@
 class ORIFont
 {
 private:
-    uint32_t glyph_width;
-    uint32_t glyph_height;
+    uint32_t glyph_width = 8;
+    uint32_t glyph_height = 16;
+
+    uint32_t char_spacing = 1;
+    uint32_t line_spcaing = 1;
 
     uint8_t* glyph_buffer;
 
