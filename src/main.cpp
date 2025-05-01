@@ -1,5 +1,6 @@
 #if defined(OPENGL)
 #include <GLFW/glfw3.h>
+#include <chrono>
 #endif
 
 #include "screen.h"
@@ -34,6 +35,10 @@ int flash_counter = 0;
 
 void loop()
 {
+#if defined(OPENGL)
+    auto start = std::chrono::high_resolution_clock::now();
+#endif
+
     if (flash_counter == 0)
         digitalWrite(21, HIGH);
     if (flash_counter >= 0)
@@ -86,24 +91,27 @@ void loop()
     ORIScreen::fillPixels(old_x, old_y + 8, box_sx + 200, box_sy, 0xFFFF);
     ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, 0b1111100000000000);
     ORIScreen::drawText(box_x, box_y + 8, "ALBEDO", 0x0000, &terminal_8x16_font);
-    /*ORIScreen::drawCharacter(box_x, box_y, 'A', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 9, box_y, 'L', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 18, box_y, 'B', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 27, box_y, 'E', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 36, box_y, 'D', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 45, box_y, 'O', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 54, box_y, ' ', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 63, box_y, 'I', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 72, box_y, 'S', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 81, box_y, ' ', 0x0000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 90, box_y, 'G', 0b1111100000000000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 99, box_y, 'A', 0b0000011111100000, &terminal_8x16_font);
-    ORIScreen::drawCharacter(box_x + 108, box_y, 'Y', 0b0000000000011111, &terminal_8x16_font);*/
+
+    uint32_t line_height = terminal_8x16_font.getGlyphHeight() + 1;
+    ORIScreen::drawText(0, ORIScreen::getHeight() - line_height, "The quick brown fox jumps over the lazy dog. He might even do a flip...", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 2), "Line 2", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 3), "Line 3", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 4), "Line 4", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 5), "Line 5", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 6), "Line 6", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 7), "Line 7", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 8), "Line 8", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 9), "Line 9", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 10), "Line 10 (end)", 0b1111111100000000, &terminal_8x16_font);
 
     ORIScreen::blit();
     delay(1);
 #if defined(OPENGL)
     glfwPollEvents();
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> diff = stop - start;
+    ORISerial::print((uint32_t)((1.0f / diff.count())), 10);
+    ORISerial::printLn("");
 #endif
 }
 

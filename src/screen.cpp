@@ -9,6 +9,8 @@
 // janky fix for windows
 #ifndef GL_UNSIGNED_SHORT_5_6_5
 #define GL_UNSIGNED_SHORT_5_6_5 0x8363
+
+#define PREVIEW_SCALE 3
 #endif
 #endif
 
@@ -146,7 +148,7 @@ void ORIScreen::initialise()
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	window = glfwCreateWindow(framebuffer_width, framebuffer_height, "origami sunset preview", nullptr, nullptr);
+	window = glfwCreateWindow(framebuffer_width * PREVIEW_SCALE, framebuffer_height * PREVIEW_SCALE, "origami sunset preview", nullptr, nullptr);
     glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 #endif
 
@@ -363,10 +365,11 @@ void ORIScreen::blit()
     // have to just draw the whole buffer (ignoring the dirty region).
     // i think this is just as performant as doing individual rows actually...
     glRasterPos2f(-1.0f, -1.0f);
+    glPixelZoom(PREVIEW_SCALE, PREVIEW_SCALE);
     glDrawPixels(framebuffer_width, framebuffer_height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, framebuffer);
 	
 	glfwSwapBuffers(window);
-    glfwSwapInterval(1);
+    //glfwSwapInterval(1);
 #endif
 
     // reset dirty region
