@@ -255,10 +255,10 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
     uint32_t glyph_height = font->getGlyphHeight();
     uint32_t glyph_pitch = font->getGlyphDataSize() / glyph_height;
 
-    int32_t top_clipping = max(0, (int32_t)(y + glyph_height) - (int32_t)framebuffer_height);
+    int32_t top_clip = max(0, (int32_t)(y + glyph_height) - (int32_t)framebuffer_height);
 
     int32_t pixel_x = x;
-    int32_t pixel_y_top = (y + glyph_height - 1) - top_clipping;
+    int32_t pixel_y_top = (y + glyph_height - 1) - top_clip;
     int32_t pixel_y = pixel_y_top;
     uint32_t cnum = 0;
     for (size_t ci = 0; t[ci] != 0x0; ci++)
@@ -268,17 +268,18 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
         uint8_t* glyph = font->getGlyphData(c);
 
         int32_t pixel_x_left = pixel_x;
-        uint32_t glyph_off = 0;
-        for (uint32_t j = top_clipping; j < glyph_height; j++)
+        uint32_t glyph_off = top_clip * glyph_pitch;
+        for (uint32_t j = top_clip; j < glyph_height; j++)
         {
             uint32_t counter = pixel_x + (pixel_y * framebuffer_width);
             for (uint32_t i = 0; i < glyph_pitch; i++)
             {
                 uint8_t value = glyph[glyph_off];
-                // TODO: clipping of X value to protect the framebuffer
                 uint8_t comparator = 0b10000000;
                 for (uint8_t _ = 0; _ < 8; _++)
                 {
+                    if (pixel_x >= framebuffer_width)
+                        break;
                     if (value & comparator)
                         framebuffer[counter] = colour;
                     pixel_x++;
@@ -288,14 +289,12 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
 
                 glyph_off++;
             }
-            glyph_off += top_clipping * glyph_pitch;
 
             pixel_x = pixel_x_left;
             pixel_y--;
         }
         pixel_y = pixel_y_top;
         pixel_x += glyph_width;
-        // TODO: char spacing pixel_x += font->getCharSpacing();
     }
     setRegionDirty(x, y, glyph_width * cnum, glyph_height);
 }
