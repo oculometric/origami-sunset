@@ -87,22 +87,24 @@ void loop()
         flash_counter = hits_this_frame == 1 ? 15 : 200;
     }
 
-    ORIScreen::fillPixels(old_x, old_y, box_sx, box_sy, 0xFFFF);
-    ORIScreen::fillPixels(old_x, old_y + 8, box_sx + 200, box_sy, 0xFFFF);
-    ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, 0b1111100000000000);
-    ORIScreen::drawText(box_x, box_y + 8, "ALBEDO", 0x0000, &terminal_8x16_font);
+    ORIScreen::clear(0b0000000000100010);
+
+    ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, 0b1111111100000000);
+    ORIScreen::drawText(box_x, box_y + 8, "ALBEDO", 0xFFFF, &terminal_8x16_font);
 
     uint32_t line_height = terminal_8x16_font.getGlyphHeight() + 1;
     ORIScreen::drawText(0, ORIScreen::getHeight() - line_height, "The quick brown fox jumps over the lazy dog. He might even do a flip...", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 2), "Line 2", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 3), "Line 3", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 4), "Line 4", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 5), "Line 5", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 6), "Line 6", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 7), "Line 7", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 8), "Line 8", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 9), "Line 9", 0b1111111100000000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 10), "Line 10 (end)", 0b1111111100000000, &terminal_8x16_font);
+    /*ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 2), "Line 2", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 3), "Line 3", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 4), "Line 4", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 5), "Line 5", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 6), "Line 6", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 7), "Line 7", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 8), "Line 8", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 9), "Line 9", 0x0000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 10), "Line 10 (end)", 0x0000, &terminal_8x16_font);*/
+
+    ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), 0b1111111100000000);
 
     ORIScreen::blit();
     delay(1);
