@@ -22,3 +22,18 @@ inline void pinMode(uint8_t pin, uint8_t mode) { }
 #if defined(ARDUINO)
 #include <Arduino.h>
 #endif
+
+/* by Jim Ulery */
+static unsigned long sqrt(unsigned long val)
+{
+    unsigned long temp, g = 0, b = 0x8000, bshft = 15;
+    do
+    {
+        if (val >= (temp = (((g << 1) + b) << bshft--)))
+        {
+            g += b;
+            val -= temp;
+        }
+    } while (b >>= 1);
+    return g;
+}

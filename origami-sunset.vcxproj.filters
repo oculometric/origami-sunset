@@ -24,6 +24,12 @@
     <ClInclude Include="inc\screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\compat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\colours.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

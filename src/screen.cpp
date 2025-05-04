@@ -14,16 +14,17 @@
 #endif
 #endif
 
+#include "compat.h"
 #include "font.h"
 
 #ifndef min
-#define min(a,b) ((a < b) ? a : b)
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 #ifndef max
-#define max(a,b) ((a > b) ? a : b)
+#define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 #ifndef abs
-#define abs(a) ((a < 0) ? -a : a)
+#define abs(a) (((a) < 0) ? -(a) : (a))
 #endif
 
 static uint16_t* framebuffer = nullptr;
@@ -203,9 +204,11 @@ void ORIScreen::setBacklightBrightness(uint8_t brightness)
 #endif
 }
 
-void ORIScreen::setPixel(uint16_t x, uint16_t y, uint16_t colour)
+void ORIScreen::setPixel(int16_t x, int16_t y, uint16_t colour)
 {
     if (x >= framebuffer_width || y >= framebuffer_height)
+        return;
+    if (x < 0 || y < 0)
         return;
     
     // set the relevant value in the framebuffer
@@ -226,10 +229,21 @@ void ORIScreen::setPixel(uint16_t x, uint16_t y, uint16_t colour)
         dirty_region_ey = y;
 }
 
-void ORIScreen::fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
+void ORIScreen::fillPixels(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t colour)
 {
     if (w == 0 || h == 0)
         return;
+
+    if (x < 0)
+    {
+        w -= -x;
+        x = 0;
+    }
+    if (y < 0)
+    {
+        h -= -y;
+        y = 0;
+    }
 
     if (x + w > framebuffer_width)
         w = framebuffer_width - x;
@@ -254,17 +268,17 @@ void ORIScreen::fillPixels(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint1
     setRegionDirty(x, y, w, h);
 }
 
-void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour, const ORIFont* font)
+void ORIScreen::drawText(int16_t x, int16_t y, const char* t, uint16_t colour, const ORIFont* font)
 {
-    uint32_t glyph_width = font->getGlyphWidth();
-    uint32_t glyph_height = font->getGlyphHeight();
-    uint32_t glyph_pitch = font->getGlyphDataSize() / glyph_height;
+    int16_t glyph_width = font->getGlyphWidth();
+    int16_t glyph_height = font->getGlyphHeight();
+    int32_t glyph_pitch = font->getGlyphDataSize() / glyph_height;
 
-    int32_t top_clip = max(0, (int32_t)(y + glyph_height) - (int32_t)framebuffer_height);
+    int16_t top_clip = max(0, (int16_t)(y + glyph_height) - (int16_t)framebuffer_height);
 
-    int32_t pixel_x = x;
-    int32_t pixel_y_top = (y + glyph_height - 1) - top_clip;
-    int32_t pixel_y = pixel_y_top;
+    int16_t pixel_x = x;
+    int16_t pixel_y_top = (y + glyph_height - 1) - top_clip;
+    int16_t pixel_y = pixel_y_top;
     uint32_t cnum = 0;
     for (size_t ci = 0; t[ci] != 0x0; ci++)
     {
@@ -272,12 +286,15 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
         cnum++;
         uint8_t* glyph = font->getGlyphData(c);
 
-        int32_t pixel_x_left = pixel_x;
-        uint32_t glyph_off = top_clip * glyph_pitch;
-        for (uint32_t j = top_clip; j < glyph_height; j++)
+        int16_t pixel_x_left = pixel_x;
+        int32_t glyph_off = top_clip * glyph_pitch;
+        for (int16_t j = top_clip; j < glyph_height; j++, pixel_x = pixel_x_left, pixel_y--)
         {
-            uint32_t counter = pixel_x + (pixel_y * framebuffer_width);
-            for (uint32_t i = 0; i < glyph_pitch; i++)
+            if (pixel_y < 0)
+                break;
+            
+            int32_t counter = pixel_x + (pixel_y * (int16_t)framebuffer_width);
+            for (int32_t i = 0; i < glyph_pitch; i++)
             {
                 uint8_t value = glyph[glyph_off];
                 uint8_t comparator = 0b10000000;
@@ -285,7 +302,7 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
                 {
                     if (pixel_x >= framebuffer_width)
                         break;
-                    if (value & comparator)
+                    if ((value & comparator) && (pixel_x >= 0))
                         framebuffer[counter] = colour;
                     pixel_x++;
                     counter++;
@@ -294,9 +311,6 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
 
                 glyph_off++;
             }
-
-            pixel_x = pixel_x_left;
-            pixel_y--;
         }
         pixel_y = pixel_y_top;
         pixel_x += glyph_width;
@@ -304,7 +318,7 @@ void ORIScreen::drawText(uint16_t x, uint16_t y, const char* t, uint16_t colour,
     setRegionDirty(x, y, glyph_width * cnum, glyph_height);
 }
 
-void ORIScreen::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t colour)
+void ORIScreen::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t colour)
 {
     bool x_flipped = x0 > x1;
     int16_t xmin = x_flipped ? x1 : x0; int16_t ymin = x_flipped ? y1 : y0;
@@ -362,7 +376,7 @@ void ORIScreen::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uin
     setRegionDirty(xmin, min(y0, y1), run, abs(rise));
 }
 
-void ORIScreen::drawCircle(uint16_t cx, uint16_t cy, uint16_t r, uint16_t fill, uint16_t outline)
+void ORIScreen::drawCircle(int16_t cx, int16_t cy, uint16_t r, uint16_t fill, uint16_t outline)
 {
     if (r == 0)
     {
@@ -370,25 +384,38 @@ void ORIScreen::drawCircle(uint16_t cx, uint16_t cy, uint16_t r, uint16_t fill, 
         return;
     }
 
-    int16_t x_min = (int16_t)cx - r;
-    int16_t y_min = (int16_t)cy - r;
+    int16_t x_min = cx - (int16_t)r;
+    int16_t y_min = cy - (int16_t)r;
     int16_t x_max = x_min + r + r;
     int16_t y_max = y_min + r + r;
 
-    uint16_t left_clip = max(-x_min, 0);
-    uint16_t bottom_clip = max(-y_min, 0);
-    uint16_t right_clip = max((int16_t)ORIScreen::getWidth() - x_max, 0);
-    uint16_t top_clip = max((int16_t)ORIScreen::getHeight() - y_max, 0);
+    int16_t left_clip = max(-x_min, 0);
+    int16_t bottom_clip = max(-y_min, 0);
+    int16_t right_clip = max(x_max - (int16_t)ORIScreen::getWidth() + 1, 0);
+    int16_t top_clip = max(y_max - (int16_t)ORIScreen::getHeight() + 1, 0);
 
-    uint16_t actual_width = (r * 2) - (left_clip + right_clip);
-    uint16_t actual_height = (r * 2) - (bottom_clip + top_clip);
+    int16_t actual_width = (r * 2) - (left_clip + right_clip);
+    int16_t actual_height = (r * 2) - (bottom_clip + top_clip);
 
-    for (int16_t y = y_min; y < y_max; y++)
+    int32_t rr = r * r;
+
+    uint32_t row_start = ((y_min + bottom_clip) * ORIScreen::getWidth()) + (x_min + left_clip);
+    uint32_t counter = row_start;
+    for (int16_t y = y_min + bottom_clip; y <= y_max - top_clip; y++)
     {
-        for (int16_t x = x_min; x < x_max; x++)
+        int16_t dy = y - cy;
+        for (int16_t x = x_min + left_clip; x <= x_max - right_clip; x++)
         {
-            // TODO: circle
+            int16_t dx = x - cx;
+            int32_t d = (dx * dx) + (dy * dy);
+            if (abs(rr - d) < r)
+                framebuffer[counter] = outline;
+            else if (d < rr)
+                framebuffer[counter] = fill;
+            counter++;
         }
+        row_start += ORIScreen::getWidth();
+        counter = row_start;
     }
 
     setRegionDirty(cx + left_clip, cy + bottom_clip, actual_width, actual_height);
@@ -472,15 +499,15 @@ void ORIScreen::blit()
     dirty_region_ey = UINT16_MAX;
 }
 
-void ORIScreen::setRegionDirty(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
+void ORIScreen::setRegionDirty(int16_t x, int16_t y, uint16_t w, uint16_t h)
 {
     // expand the dirty region
     if (x < dirty_region_sx)
-        dirty_region_sx = x;
+        dirty_region_sx = max(x, 0);
     if ((x + w - 1 > dirty_region_ex) || (dirty_region_ex == UINT16_MAX))
         dirty_region_ex = min(x + w - 1, framebuffer_width - 1);
     if (y < dirty_region_sy)
-        dirty_region_sy = y;
+        dirty_region_sy = max(y, 0);
     if ((y + h - 1 > dirty_region_ey) || (dirty_region_ey == UINT16_MAX))
         dirty_region_ey = min(y + h - 1, framebuffer_height - 1);
 }

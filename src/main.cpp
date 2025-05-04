@@ -6,6 +6,7 @@
 #include "screen.h"
 #include "compat.h"
 #include "log.h"
+#include "colours.h"
 #include "font8x16.h"
 
 void setup()
@@ -89,11 +90,12 @@ void loop()
 
     ORIScreen::clear(0b0000000000100010);
 
-    ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, 0b1111111100000000);
-    ORIScreen::drawText(box_x, box_y + 8, "ALBEDO", 0xFFFF, &terminal_8x16_font);
+    //ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, ORIColour::BLUE);
+    ORIScreen::drawText(box_x, box_y + 8, "ALBEDO", ORIColour::WHITE, &terminal_8x16_font);
+    ORIScreen::drawText(-4, box_y, "test", ORIColour::WHITE, &terminal_8x16_font);
 
     uint32_t line_height = terminal_8x16_font.getGlyphHeight() + 1;
-    ORIScreen::drawText(0, ORIScreen::getHeight() - line_height, "The quick brown fox jumps over the lazy dog. He might even do a flip...", 0b1111111100000000, &terminal_8x16_font);
+    ORIScreen::drawText(0, ORIScreen::getHeight() - line_height, "The quick brown fox jumps over the lazy dog. He might even do a flip...", ORIColour::GOLD, &terminal_8x16_font);
     /*ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 2), "Line 2", 0x0000, &terminal_8x16_font);
     ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 3), "Line 3", 0x0000, &terminal_8x16_font);
     ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 4), "Line 4", 0x0000, &terminal_8x16_font);
@@ -104,7 +106,9 @@ void loop()
     ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 9), "Line 9", 0x0000, &terminal_8x16_font);
     ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 10), "Line 10 (end)", 0x0000, &terminal_8x16_font);*/
 
-    ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), 0b1111111100000000);
+    ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), ORIColour::GOLD);
+    ORIScreen::drawCircle(box_x, 4, 4, ORIColour::GOLD, ORIColour::RED);
+    ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);
 
     ORIScreen::blit();
     delay(1);
