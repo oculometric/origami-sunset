@@ -30,6 +30,9 @@
     <ClInclude Include="inc\colours.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\constellation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\constellation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

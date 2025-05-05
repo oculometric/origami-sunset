@@ -6,6 +6,19 @@
 #include <thread>
 #endif
 
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef abs
+#define abs(a) (((a) < 0) ? -(a) : (a))
+#endif
+#ifndef sign
+#define sign(a) (((a) >= 0) ? 1 : -1)
+#endif
+
 #if !defined(ARDUINO)
 inline void delay(uint32_t millis) { std::this_thread::sleep_for(std::chrono::milliseconds(1)); }
 inline void digitalWrite(uint8_t pin, uint8_t val) { }

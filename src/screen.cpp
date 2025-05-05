@@ -17,16 +17,6 @@
 #include "compat.h"
 #include "font.h"
 
-#ifndef min
-#define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
-#ifndef max
-#define max(a,b) (((a) > (b)) ? (a) : (b))
-#endif
-#ifndef abs
-#define abs(a) (((a) < 0) ? -(a) : (a))
-#endif
-
 static uint16_t* framebuffer = nullptr;
 static uint16_t framebuffer_width;
 static uint16_t framebuffer_height;
@@ -150,7 +140,8 @@ void ORIScreen::initialise()
 #if defined(OPENGL)
 	glfwInit();
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	window = glfwCreateWindow(framebuffer_width * PREVIEW_SCALE, framebuffer_height * PREVIEW_SCALE, "origami sunset preview", nullptr, nullptr);
     glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
@@ -488,7 +479,8 @@ void ORIScreen::blit()
     glPixelZoom(PREVIEW_SCALE, PREVIEW_SCALE);
     glDrawPixels(framebuffer_width, framebuffer_height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, framebuffer);
 	
-	glfwSwapBuffers(window);
+    glFlush();
+	//glfwSwapBuffers(window);
     //glfwSwapInterval(1);
 #endif
 

@@ -15,7 +15,7 @@ enum ORIColour : uint16_t
     GOLD    = 0b1111010111100000
 };
 
-uint16_t colourFromRGB(float r, float g, float b)
+inline uint16_t colourFromRGB(float r, float g, float b)
 {
     uint16_t red = (uint16_t)(r * 31.0f) << 11;
     uint16_t green = (uint16_t)(g * 63.0f) << 5;

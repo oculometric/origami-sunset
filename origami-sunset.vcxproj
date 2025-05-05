@@ -142,11 +142,13 @@
   <ItemGroup>
     <ClInclude Include="inc\colours.h" />
     <ClInclude Include="inc\compat.h" />
+    <ClInclude Include="inc\constellation.h" />
     <ClInclude Include="inc\font.h" />
     <ClInclude Include="inc\font8x16.h" />
     <ClInclude Include="inc\screen.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="inc\constellation.cpp" />
     <ClCompile Include="src\log.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\screen.cpp" />

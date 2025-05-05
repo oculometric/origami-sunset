@@ -8,6 +8,7 @@
 #include "log.h"
 #include "colours.h"
 #include "font8x16.h"
+#include "constellation.h"
 
 void setup()
 {
@@ -26,8 +27,8 @@ void setup()
 
 int16_t box_x = 0;
 int16_t box_y = 0;
-int16_t box_sx = 16;
-int16_t box_sy = 16;
+int16_t box_sx = 1;
+int16_t box_sy = 1;
 
 int16_t box_dx = 1;
 int16_t box_dy = 1;
@@ -90,25 +91,16 @@ void loop()
 
     ORIScreen::clear(0b0000000000100010);
 
-    //ORIScreen::fillPixels(box_x, box_y, box_sx, box_sy, ORIColour::BLUE);
-    ORIScreen::drawText(box_x, box_y + 8, "ALBEDO", ORIColour::WHITE, &terminal_8x16_font);
+    /*ORIScreen::drawText(box_x, box_y - 8, "ALBEDO", ORIColour::WHITE, &terminal_8x16_font);
     ORIScreen::drawText(-4, box_y, "test", ORIColour::WHITE, &terminal_8x16_font);
 
     uint32_t line_height = terminal_8x16_font.getGlyphHeight() + 1;
     ORIScreen::drawText(0, ORIScreen::getHeight() - line_height, "The quick brown fox jumps over the lazy dog. He might even do a flip...", ORIColour::GOLD, &terminal_8x16_font);
-    /*ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 2), "Line 2", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 3), "Line 3", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 4), "Line 4", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 5), "Line 5", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 6), "Line 6", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 7), "Line 7", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 8), "Line 8", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 9), "Line 9", 0x0000, &terminal_8x16_font);
-    ORIScreen::drawText(0, ORIScreen::getHeight() - (line_height * 10), "Line 10 (end)", 0x0000, &terminal_8x16_font);*/
 
     ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), ORIColour::GOLD);
     ORIScreen::drawCircle(box_x, 4, 4, ORIColour::GOLD, ORIColour::RED);
-    ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);
+    ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);*/
+    ORIConstellationViewer::drawConstellations(0.0f, 0.0f);
 
     ORIScreen::blit();
     delay(1);
