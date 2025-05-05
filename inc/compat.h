@@ -6,17 +6,17 @@
 #include <thread>
 #endif
 
-#ifndef min
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+#ifndef cmin
+#define cmin(a,b) (((a) < (b)) ? (a) : (b))
 #endif
-#ifndef max
-#define max(a,b) (((a) > (b)) ? (a) : (b))
+#ifndef cmax
+#define cmax(a,b) (((a) > (b)) ? (a) : (b))
 #endif
-#ifndef abs
-#define abs(a) (((a) < 0) ? -(a) : (a))
+#ifndef cabs
+#define cabs(a) (((a) < 0) ? -(a) : (a))
 #endif
-#ifndef sign
-#define sign(a) (((a) >= 0) ? 1 : -1)
+#ifndef csign
+#define csign(a) (((a) >= 0) ? 1 : -1)
 #endif
 
 #if !defined(ARDUINO)

@@ -26,6 +26,10 @@ struct ORIStar
 
     float dist;
     float abs_mag;
+
+    inline ORIStar(const char* _name = nullptr, RightAscension _ra = { 0, 0, 0 }, Declination _dec = { 0, 0, 0 }, float _dist = 1.0f, float _abs_mag = 0.0f)
+        : name(_name), ra(_ra), dec(_dec), dist(_dist), abs_mag(_abs_mag)
+        { }
 };
 
 struct ORIConstellation
@@ -34,6 +38,10 @@ struct ORIConstellation
 
     std::vector<ORIStar> stars;
     std::vector<uint16_t> edges;
+
+    inline ORIConstellation(const char* _name = nullptr, std::vector<ORIStar> _stars = { }, std::vector<uint16_t> _edges = { })
+        : name(_name), stars(_stars), edges(_edges)
+        { }
 };
 
 class ORIConstellationViewer

@@ -23,6 +23,8 @@ void setup()
     ORIScreen::setBacklightBrightness(32);
 
     ORISerial::printLn("Hello, cassette!");
+
+    ORIScreen::clear(0b0000000000100010);
 }
 
 int16_t box_x = 0;
@@ -89,9 +91,10 @@ void loop()
         flash_counter = hits_this_frame == 1 ? 15 : 200;
     }
 
+    // FIXME: it simply is not possible to push the entire contents of the screen across in one frame. 2fps is the maximum rate at which we can draw whole frames
     ORIScreen::clear(0b0000000000100010);
 
-    /*ORIScreen::drawText(box_x, box_y - 8, "ALBEDO", ORIColour::WHITE, &terminal_8x16_font);
+    ORIScreen::drawText(box_x, box_y - 8, "ALBEDO", ORIColour::WHITE, &terminal_8x16_font);
     ORIScreen::drawText(-4, box_y, "test", ORIColour::WHITE, &terminal_8x16_font);
 
     uint32_t line_height = terminal_8x16_font.getGlyphHeight() + 1;
@@ -99,8 +102,8 @@ void loop()
 
     ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), ORIColour::GOLD);
     ORIScreen::drawCircle(box_x, 4, 4, ORIColour::GOLD, ORIColour::RED);
-    ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);*/
-    ORIConstellationViewer::drawConstellations(0.0f, 0.0f);
+    ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);
+    //ORIConstellationViewer::drawConstellations(0.0f, 0.0f);
 
     ORIScreen::blit();
     delay(1);
