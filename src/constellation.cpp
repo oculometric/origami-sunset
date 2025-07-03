@@ -70,9 +70,10 @@ const float pi_180 = 3.14159f / 180.0f;
 // ix = (ta + ht) * sw
 inline void project(float asc, float dec, float tf[2], float sz[2], int16_t& ix, int16_t& iy)
 {
-    // TODO: implement perspective. this does not do it
-    float fx = tan(asc * pi_180) + tf[0];
-    float fy = tan(dec * pi_180) + tf[1];
+    float ar = asc * pi_180;
+    float dr = dec * pi_180;
+    float fx = (tan(ar) / cos(dr)) + tf[0]; // the cosine hack
+    float fy = (tan(dr) / cos(ar)) + tf[1];
 
     ix = (fx * sz[0]);
     iy = (fy * sz[1]);
@@ -89,33 +90,50 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
 
     const float vfov = atan(tan_fov[1]) * 2.0f / pi_180;
 
+    const int lat_lines = 36;
+    const int long_lines = 36;
+    const float lat_ang = 360.0f / (float)lat_lines;
+    const float long_ang = 360.0f / (float)long_lines;
+    const int ll_count = (lat_lines + 1) * (long_lines + 1);
+
     // draw grid
-    int16_t ixg[24 * 24] = { INT16_MAX };
-    int16_t iyg[24 * 24] = { INT16_MAX };
+    int16_t ixg[ll_count] = { INT16_MAX };
+    int16_t iyg[ll_count] = { INT16_MAX };
+    bool vg[ll_count] = { false };
     int n = 0;
-    for (int i = 0; i < 24; i++)
+    for (int i = -1; i < lat_lines; i++)
     {
-        for (int j = 0; j < 24; j++)
+        for (int j = -1; j < long_lines; j++)
         {
-            float asc = (i * -15.0f) + ascension;
+            float asc = (j * -long_ang) + ascension;
             if (angleDistance(asc) > 90.0f)
             {
-                ixg[i] = INT16_MAX;
-                iyg[i] = INT16_MAX;
+                vg[n] = false;
+                ixg[n] = INT16_MAX;
+                iyg[n] = INT16_MAX;
                 n++;
                 continue;
             }
-            float dec = (j * 15.0f) - declination;
+            float dec = (i * lat_ang) - declination;
             if (angleDistance(dec) > 90.0f)
             {
-                ixg[i] = INT16_MAX;
-                iyg[i] = INT16_MAX;
+                vg[n] = false;
+                ixg[n] = INT16_MAX;
+                iyg[n] = INT16_MAX;
                 n++;
                 continue;
             }
 
             project(asc, dec, tan_fov, size_fac, ixg[n], iyg[n]);
-            ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
+            vg[n] = (ixg[n] > 0 && ixg[n] < ORIScreen::getWidth()) && (iyg[n] > 0 && iyg[n] < ORIScreen::getHeight());
+            if (vg[n])
+                ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
+
+            if (j >= 0 && (vg[n - 1] || vg[n]))
+                ORIScreen::drawLine(ixg[n - 1] - 1, iyg[n - 1], ixg[n] + 2, iyg[n], DGREY);
+
+            if (i >= 0 && (vg[n - (long_lines + 1)] || vg[n]))
+                ORIScreen::drawLine(ixg[n - (long_lines + 1)], iyg[n - (long_lines + 1)] + 2, ixg[n], iyg[n] - 2, DGREY);
 
             n++;
         }

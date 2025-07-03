@@ -108,13 +108,13 @@ void loop()
     //ORIScreen::drawCircle(box_x, 4, 4, ORIColour::GOLD, ORIColour::RED);
     //ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);
     ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
-    ORISerial::print("camera RA: ");
+    /*ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);
     ORISerial::print(", camera DC: ");
     ORISerial::print(camera_up);
     ORISerial::print(", camera fov: ");
     ORISerial::print(camera_fov);
-    ORISerial::printLn("");
+    ORISerial::printLn("");*/
 
     int16_t cx = ORIScreen::getWidth() / 2;
     int16_t cy = ORIScreen::getHeight() / 2;
@@ -145,14 +145,14 @@ void loop()
         camera_right += 360.0;
     if (camera_right > 360.0f)
         camera_right -= 360.0f;
-    if (camera_up < -90.0f)
-        camera_up = -90.0f;
-    if (camera_up > 90.0f)
-        camera_up = 90.0f;
+    if (camera_up < -100.0f)
+        camera_up = -100.0f;
+    if (camera_up > 100.0f)
+        camera_up = 100.0f;
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = stop - start;
-    //ORISerial::print((uint32_t)((1.0f / diff.count())), 10);
-    //ORISerial::printLn("");
+    ORISerial::print((uint32_t)((1.0f / diff.count())), 10);
+    ORISerial::printLn("");
 #endif
 }
 
