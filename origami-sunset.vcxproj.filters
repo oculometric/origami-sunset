@@ -33,6 +33,12 @@
     <ClInclude Include="inc\constellation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\terminal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -44,7 +50,7 @@
     <ClCompile Include="src\log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inc\constellation.cpp">
+    <ClCompile Include="src\constellation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

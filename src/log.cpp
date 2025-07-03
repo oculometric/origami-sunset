@@ -25,6 +25,16 @@ void ORISerial::printLn(const char* text)
 #endif
 }
 
+void ORISerial::print(const char* text)
+{
+#if defined(ARDUINO)
+    Serial.println(text);
+#endif
+#if defined(OPENGL)
+    std::cout << text;
+#endif
+}
+
 void ORISerial::print(const uint8_t i, const uint8_t b)
 {
 #if defined(ARDUINO)
@@ -76,6 +86,16 @@ void ORISerial::print(const uint32_t i, const uint8_t b)
     }
     std::cout << i;
     std::cout << std::dec;
+#endif
+}
+
+void ORISerial::print(const float f)
+{
+#if defined(ARDUINO)
+    Serial.print(i, b);
+#endif
+#if defined(OPENGL)
+    std::cout << f;
 #endif
 }
 

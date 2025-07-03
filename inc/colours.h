@@ -6,6 +6,8 @@ enum ORIColour : uint16_t
 {
     BLACK   = 0x0000,
     WHITE   = 0xFFFF,
+    LGREY   = 0b1100011000011000,
+    DGREY   = 0b0001100001100011,
     RED     = 0xF800,
     GREEN   = 0x07E0,
     BLUE    = 0x001F,

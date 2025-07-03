@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 class ORIFont;
+struct GLFWwindow;
 
 class ORIScreen
 {
@@ -46,4 +47,8 @@ public:
 
     static uint16_t getWidth();
     static uint16_t getHeight();
+
+#if defined(OPENGL)
+    static GLFWwindow* getWindow();
+#endif
 };

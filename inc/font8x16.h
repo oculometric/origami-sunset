@@ -3,7 +3,7 @@
 #include "font.h"
 
 // 8 bits wide * 16 bits high (aka 1 byte wide, 16 bytes high) * 256 characters
-uint8_t font_8x16_data[1 * 16 * 256] =
+static uint8_t font_8x16_data[1 * 16 * 256] =
 {
     // 0x00, aka NUL
     0b11111111,
