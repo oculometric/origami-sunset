@@ -122,21 +122,21 @@ void loop()
     ORIScreen::drawLine(cx, cy - 4, cx, cy + 5, RED);
 
     ORIScreen::blit();
-    delay(1);
+    delay(16);
 #if defined(OPENGL)
     glfwPollEvents();
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera_right -= camera_fov / 120.0f;
+        camera_right -= camera_fov / 460.0f;
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera_right += camera_fov / 120.0f;
+        camera_right += camera_fov / 460.0f;
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_UP) == GLFW_PRESS)
-        camera_up += camera_fov / 120.0f;
+        camera_up += camera_fov / 460.0f;
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera_up -= camera_fov / 120.0f;
+        camera_up -= camera_fov / 460.0f;
     if (glfwGetKey(ORIScreen::getWindow(), '.') == GLFW_PRESS)
-        camera_fov += 1.0f;
+        camera_fov += 0.2f;
     if (glfwGetKey(ORIScreen::getWindow(), ',') == GLFW_PRESS)
-        camera_fov -= 1.0f;
+        camera_fov -= 0.2f;
     if (camera_fov < 5.0f)
         camera_fov = 5.0f;
     if (camera_fov > 120.0f)
@@ -151,8 +151,8 @@ void loop()
         camera_up = 100.0f;
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = stop - start;
-    ORISerial::print((uint32_t)((1.0f / diff.count())), 10);
-    ORISerial::printLn("");
+    //ORISerial::print((uint32_t)((1.0f / diff.count())), 10);
+    //ORISerial::printLn("");
 #endif
 }
 

@@ -5,7 +5,7 @@
 #include "compat.h"
 #include "font8x16.h"
 
-const ORIConstellation constellations[1] = 
+const ORIConstellation constellations[2] = 
 {
     {
         "scorpius",
@@ -33,6 +33,22 @@ const ORIConstellation constellations[1] =
             2, 5,
             5, 7,
             7, 1
+        }
+    },
+    {
+        "cassiopeia",
+        {
+            ORIStar{ "alpha Cas",   {  0, 40, 30.39f }, { 56, 32, 14.7f }, 228.0f, -1.99f, 2.24f },
+            ORIStar{ "Caph",        {  0,  9, 10.09f }, { 59,  9,  0.8f }, 54.0f,   1.17f, 2.28f },
+            ORIStar{ "gamma Cas",   {  0, 56, 42.50f }, { 60, 43,  0.3f }, 613.0f, -4.22f, 2.47f },
+            ORIStar{ "delta Cas",   {  1, 25, 48.60f }, { 60, 14,  7.5f }, 99.0f,   0.25f, 2.68f },
+            ORIStar{ "epsilon Cas", {  1, 54, 23.68f }, { 63, 40, 12.5f }, 442.0f, -2.31f, 3.35f }
+        },
+        {
+            1, 0,
+            0, 2,
+            2, 3,
+            3, 4
         }
     }
 };
@@ -179,7 +195,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
                 r = 0;
             ORIScreen::drawCircle(ixs[i], iys[i], r, GOLD, GOLD);
 
-            if (angleDistance(ascension_angle) < 5.0f && angleDistance(declination_angle) < 5.0f)
+            if (angleDistance(ascension_angle) < 2.0f && angleDistance(declination_angle) < 2.0f)
                 ORIScreen::drawText(ixs[i] + 10, iys[i], star.name, WHITE, &terminal_8x16_font);
 
             i++;
