@@ -174,7 +174,7 @@ void ORIConstellationViewer::initialiseConstellations()
 }
 
 // before modifications: 0.14ms
-// after improving mult in project: 0.13ms
+// after improving mult in project: 0.12ms
 
 void ORIConstellationViewer::drawConstellations(float ascension, float declination, float fov)
 {
