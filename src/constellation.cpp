@@ -78,13 +78,92 @@ float angleDistance(float a)
 
 const float pi_180 = 3.14159f / 180.0f;
 
+inline void computeNormal(float asc, float dec, float vec[3])
+{
+    float ap = asc * pi_180;
+    float dp = dec * pi_180;
+    float cd = cos(dp);
+    vec[0] = -sin(ap) * cd;
+    vec[1] = cos(ap) * cd;
+    vec[2] = sin(dp);
+}
+
+inline void createCameraRotationMatrix(float asc, float dec, float mat[9])
+{
+    // rotation around X, look up-down aka declination
+    float ap = asc * pi_180;
+    float dp = (dec + 90) * pi_180;
+    //float ca = cos(ap);
+    //float sa = sin(ap);
+    //float cd = cos(dp);
+    //float sd = sin(dp);
+    /*
+    float rx[9] = 
+    {
+        1.0f, 0.0f, 0.0f,
+        0.0f,   cd,  -sd, 
+        0.0f,   sd,   cd
+    };
+    float rz[9] =
+    {
+          ca,  -sa, 0.0f,
+          sa,   ca, 0.0f,
+        0.0f, 0.0f, 1.0f
+    }; 
+    */
+
+    //// rz * rx
+    //// and then the inverse
+
+    //mat[0] = ca;
+    //mat[1] = -sa * cd;
+    //mat[2] = sa * sd;
+    //mat[3] = sa;
+    //mat[4] = ca * cd;
+    //mat[5] = -sd * ca;
+    //mat[6] = 0.0f;
+    //mat[7] = sd;
+    //mat[8] = cd;
+
+    // or, -rx * -rz (rotate in opposite directions, in the opposite order)
+    // eliminates the need for inverse
+    float ca = cos(-ap);
+    float sa = sin(-ap);
+    float cd = cos(-dp);
+    float sd = sin(-dp);
+    mat[0] = ca;
+    mat[1] = -sa;
+    mat[2] = 0.0f;
+    mat[3] = cd * sa;
+    mat[4] = ca * cd;
+    mat[5] = -sd;
+    mat[6] = sa * sd;
+    mat[7] = ca * sd;
+    mat[8] = cd;
+}
+
+inline void multiplyMatVec(float mat[9], float vec[3])
+{
+    // 0, 1, 2       0
+    // 3, 4, 5   x   1
+    // 6, 7, 8       2
+
+    float v0 = (mat[0] * vec[0]) + (mat[1] * vec[1]) + (mat[2] * vec[2]);
+    float v1 = (mat[3] * vec[0]) + (mat[4] * vec[1]) + (mat[5] * vec[2]);
+    float v2 = (mat[6] * vec[0]) + (mat[7] * vec[1]) + (mat[8] * vec[2]);
+    
+    vec[0] = v0;
+    vec[1] = v1;
+    vec[2] = v2;
+}
+
 // ht = tan((fov * pi_180) / 2)
 // ta = tan(asc * pi_180)
 // ix = (((ta / ht) + 1) / 2) * width
 // ix = (((ta + ht) / ht) / 2) * width
 // sw = width / (2 * ht)
 // ix = (ta + ht) * sw
-inline void project(float asc, float dec, float tf[2], float sz[2], int16_t& ix, int16_t& iy)
+inline void oldProject(float asc, float dec, float tf[2], float sz[2], int16_t& ix, int16_t& iy)
 {
     float ar = asc * pi_180;
     float dr = dec * pi_180;
@@ -93,6 +172,19 @@ inline void project(float asc, float dec, float tf[2], float sz[2], int16_t& ix,
 
     ix = (fx * sz[0]);
     iy = (fy * sz[1]);
+}
+
+inline void project(float asc, float dec, float camera[9], float tfi[2], float sh[2], int16_t& ix, int16_t& iy)
+{
+    float v[3] = { 0.0f };
+    computeNormal(asc, dec, v);
+    multiplyMatVec(camera, v);
+    v[0] = (v[0] * tfi[0]) / -v[2];
+    v[1] = (v[1] * tfi[1]) / -v[2];
+    v[2] = 1.0f;
+
+    ix = (v[0] + 1.0f) * sh[0];
+    iy = (v[1] + 1.0f) * sh[1];
 }
 
 void ORIConstellationViewer::drawConstellations(float ascension, float declination, float fov)
@@ -104,7 +196,13 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         size_fac[0] = (float)ORIScreen::getWidth() / (2.0f * tan_fov[0]);
         size_fac[1] = (float)ORIScreen::getHeight() / (2.0f * tan_fov[1]);
 
+    float tfi[2] = { 1.0f / tan_fov[0], 1.0f / tan_fov[1] };
+    float sh[2] = { (float)ORIScreen::getWidth() * 0.5f, (float)ORIScreen::getHeight() * 0.5f };
+
     const float vfov = atan(tan_fov[1]) * 2.0f / pi_180;
+
+    float cam_mat[9] = { 0.0f };
+    createCameraRotationMatrix(ascension, declination, cam_mat);
 
     const int lat_lines = 36;
     const int long_lines = 36;
@@ -140,7 +238,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
                 continue;
             }
 
-            project(asc, dec, tan_fov, size_fac, ixg[n], iyg[n]);
+            project(j * -long_ang, i * lat_ang, cam_mat, tfi, sh, ixg[n], iyg[n]);
             vg[n] = (ixg[n] > 0 && ixg[n] < ORIScreen::getWidth()) && (iyg[n] > 0 && iyg[n] < ORIScreen::getHeight());
             if (vg[n])
                 ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
@@ -180,7 +278,8 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
                 continue;
             }
 
-            project(ascension_angle, declination_angle, tan_fov, size_fac, ixs[i], iys[i]);
+            //project(ascension_angle, declination_angle, tan_fov, size_fac, ixs[i], iys[i]);
+            project(getDegrees(star.ra), getDegrees(star.dec), cam_mat, tfi, sh, ixs[i], iys[i]);
             
             uint16_t r = 5;
             if (star.app_mag > 0.5f)
@@ -196,7 +295,9 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             ORIScreen::drawCircle(ixs[i], iys[i], r, GOLD, GOLD);
 
             if (angleDistance(ascension_angle) < 2.0f && angleDistance(declination_angle) < 2.0f)
+            {
                 ORIScreen::drawText(ixs[i] + 10, iys[i], star.name, WHITE, &terminal_8x16_font);
+            }
 
             i++;
         }
