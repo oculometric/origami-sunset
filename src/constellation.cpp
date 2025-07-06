@@ -151,12 +151,15 @@ inline bool project(const float vector[3], float camera[9], float tfi[2], float 
     // TODO: optimise this
     v[0] = (v[0] * tfi[0]) * inv_depth;
     v[1] = (v[1] * tfi[1]) * inv_depth;
-    //v[2] = 1.0f;//v[2] = (-(1.5f * v[2]) - 0.75f) * inv_depth;
 
     ix = (v[0] + 1.0f) * sh[0];
     iy = (v[1] + 1.0f) * sh[1];
 
     if (inv_depth < 0.0f)
+        return false;
+    if (v[0] < -1.0f || v[0] > 1.0f)
+        return false;
+    if (v[1] < -1.0f || v[1] > 1.0f)
         return false;
     return true;
 }
@@ -208,13 +211,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
 
             float v[3] = { 0.0f };
             computeNormal(j * long_ang, i * lat_ang, v);
-            if (!project(v, cam_mat, tfi, sh, ixg[n], iyg[n]))
-            {
-                vg[n] = false;
-                n++;
-                continue;
-            }
-            vg[n] = (ixg[n] > 0 && ixg[n] < ORIScreen::getWidth()) && (iyg[n] > 0 && iyg[n] < ORIScreen::getHeight());
+            vg[n] = project(v, cam_mat, tfi, sh, ixg[n], iyg[n]);
             //if (vg[n])
             //    ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
 
@@ -239,15 +236,14 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         {
             float ascension_angle = -getDegrees(star.ra) + ascension;
             float declination_angle = getDegrees(star.dec) - declination;
-
-            if (!project(star.vector, cam_mat, tfi, sh, ixs[i], iys[i]))
+            
+            vs[i] = project(star.vector, cam_mat, tfi, sh, ixs[i], iys[i]);
+            if (!vs[i])
             {
-                vs[i] = false;
                 i++;
                 continue;
             }
 
-            vs[i] = true;
             uint16_t r = 5;
             if (star.app_mag > 0.5f)
                 r = 4;
