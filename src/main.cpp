@@ -1,6 +1,7 @@
 #if defined(OPENGL)
 #include <GLFW/glfw3.h>
 #include <chrono>
+#include <iostream>
 #endif
 
 #include "screen.h"
@@ -39,9 +40,12 @@ int16_t box_dy = 1;
 
 int flash_counter = 0;
 
-float camera_right = 0.0f;//247.0f;
-float camera_up = 0.0f;//-22.0f;
+float camera_right = 247.0f;
+float camera_up = -24.8f;
 float camera_fov = 90.0f;
+
+float total_time = 0.0f;
+int total_its = 0;
 
 void loop()
 {
@@ -109,7 +113,12 @@ void loop()
     //ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), ORIColour::GOLD);
     //ORIScreen::drawCircle(box_x, 4, 4, ORIColour::GOLD, ORIColour::RED);
     //ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);
+    auto s = std::chrono::high_resolution_clock::now();
     ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
+    auto e = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> d = e - s;
+    total_time += d.count();
+    total_its++;
     ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);
     ORISerial::print(", camera DC: ");
@@ -163,8 +172,10 @@ int main()
 {
     setup();
 
-    while (true)
+    while (!glfwWindowShouldClose(ORIScreen::getWindow()))
         loop();
+
+    std::cout << "average time for constellation drawing: " << (total_time / (float)total_its) * 1000.0f << "ms" << std::endl;
 
     return 1;
 }
