@@ -25,6 +25,8 @@ void setup()
     ORISerial::printLn("Hello, cassette!");
 
     ORIScreen::clear(0b0000000000100010);
+
+    ORIConstellationViewer::initialiseConstellations();
 }
 
 int16_t box_x = 0;

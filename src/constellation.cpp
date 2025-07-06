@@ -93,39 +93,8 @@ inline void createCameraRotationMatrix(float asc, float dec, float mat[9])
     // rotation around X, look up-down aka declination
     float ap = asc * pi_180;
     float dp = (dec + 90) * pi_180;
-    //float ca = cos(ap);
-    //float sa = sin(ap);
-    //float cd = cos(dp);
-    //float sd = sin(dp);
-    /*
-    float rx[9] = 
-    {
-        1.0f, 0.0f, 0.0f,
-        0.0f,   cd,  -sd, 
-        0.0f,   sd,   cd
-    };
-    float rz[9] =
-    {
-          ca,  -sa, 0.0f,
-          sa,   ca, 0.0f,
-        0.0f, 0.0f, 1.0f
-    }; 
-    */
 
-    //// rz * rx
-    //// and then the inverse
-
-    //mat[0] = ca;
-    //mat[1] = -sa * cd;
-    //mat[2] = sa * sd;
-    //mat[3] = sa;
-    //mat[4] = ca * cd;
-    //mat[5] = -sd * ca;
-    //mat[6] = 0.0f;
-    //mat[7] = sd;
-    //mat[8] = cd;
-
-    // or, -rx * -rz (rotate in opposite directions, in the opposite order)
+    // -rx * -rz (rotate in opposite directions, in the opposite order)
     // eliminates the need for inverse
     float ca = cos(-ap);
     float sa = sin(-ap);
@@ -174,17 +143,35 @@ inline void oldProject(float asc, float dec, float tf[2], float sz[2], int16_t& 
     iy = (fy * sz[1]);
 }
 
-inline void project(float asc, float dec, float camera[9], float tfi[2], float sh[2], int16_t& ix, int16_t& iy)
+inline bool project(const float vector[3], float camera[9], float tfi[2], float sh[2], int16_t& ix, int16_t& iy)
 {
-    float v[3] = { 0.0f };
-    computeNormal(asc, dec, v);
+    float v[3] = { vector[0], vector[1], vector[2] };
     multiplyMatVec(camera, v);
-    v[0] = (v[0] * tfi[0]) / -v[2];
-    v[1] = (v[1] * tfi[1]) / -v[2];
-    v[2] = 1.0f;
+    float inv_depth = -1.0f / v[2];
+    // TODO: optimise this
+    v[0] = (v[0] * tfi[0]) * inv_depth;
+    v[1] = (v[1] * tfi[1]) * inv_depth;
+    //v[2] = 1.0f;//v[2] = (-(1.5f * v[2]) - 0.75f) * inv_depth;
 
     ix = (v[0] + 1.0f) * sh[0];
     iy = (v[1] + 1.0f) * sh[1];
+
+    if (inv_depth < 0.0f)
+        return false;
+    return true;
+}
+
+void ORIConstellationViewer::initialiseConstellations()
+{
+    for (const ORIConstellation& constel : constellations)
+    {
+        auto it = constel.stars.begin();
+        while (it != constel.stars.end())
+        {
+            computeNormal(getDegrees((*it).ra), getDegrees((*it).dec), (float*)((*it).vector));
+            it++;
+        }
+    }
 }
 
 void ORIConstellationViewer::drawConstellations(float ascension, float declination, float fov)
@@ -192,9 +179,6 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     float tan_fov[2] = { 0 };
         tan_fov[0] = tan((fov * pi_180) / 2.0f);
         tan_fov[1] = tan_fov[0] * ((float)ORIScreen::getHeight() / (float)ORIScreen::getWidth());
-    float size_fac[2] = { 0 };
-        size_fac[0] = (float)ORIScreen::getWidth() / (2.0f * tan_fov[0]);
-        size_fac[1] = (float)ORIScreen::getHeight() / (2.0f * tan_fov[1]);
 
     float tfi[2] = { 1.0f / tan_fov[0], 1.0f / tan_fov[1] };
     float sh[2] = { (float)ORIScreen::getWidth() * 0.5f, (float)ORIScreen::getHeight() * 0.5f };
@@ -205,9 +189,9 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     createCameraRotationMatrix(ascension, declination, cam_mat);
 
     const int lat_lines = 36;
-    const int long_lines = 36;
+    const int long_lines = 18;
     const float lat_ang = 360.0f / (float)lat_lines;
-    const float long_ang = 360.0f / (float)long_lines;
+    const float long_ang = 180.0f / (float)long_lines;
     const int ll_count = (lat_lines + 1) * (long_lines + 1);
 
     // draw grid
@@ -220,34 +204,25 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         for (int j = -1; j < long_lines; j++)
         {
             float asc = (j * -long_ang) + ascension;
-            if (angleDistance(asc) > 90.0f)
-            {
-                vg[n] = false;
-                ixg[n] = INT16_MAX;
-                iyg[n] = INT16_MAX;
-                n++;
-                continue;
-            }
             float dec = (i * lat_ang) - declination;
-            if (angleDistance(dec) > 90.0f)
+
+            float v[3] = { 0.0f };
+            computeNormal(j * long_ang, i * lat_ang, v);
+            if (!project(v, cam_mat, tfi, sh, ixg[n], iyg[n]))
             {
                 vg[n] = false;
-                ixg[n] = INT16_MAX;
-                iyg[n] = INT16_MAX;
                 n++;
                 continue;
             }
-
-            project(j * -long_ang, i * lat_ang, cam_mat, tfi, sh, ixg[n], iyg[n]);
             vg[n] = (ixg[n] > 0 && ixg[n] < ORIScreen::getWidth()) && (iyg[n] > 0 && iyg[n] < ORIScreen::getHeight());
-            if (vg[n])
-                ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
+            //if (vg[n])
+            //    ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
 
             if (j >= 0 && (vg[n - 1] || vg[n]))
-                ORIScreen::drawLine(ixg[n - 1] - 1, iyg[n - 1], ixg[n] + 2, iyg[n], DGREY);
+                ORIScreen::drawLine(ixg[n], iyg[n], ixg[n - 1], iyg[n - 1], DGREY);
 
             if (i >= 0 && (vg[n - (long_lines + 1)] || vg[n]))
-                ORIScreen::drawLine(ixg[n - (long_lines + 1)], iyg[n - (long_lines + 1)] + 2, ixg[n], iyg[n] - 2, DGREY);
+                ORIScreen::drawLine(ixg[n - (long_lines + 1)], iyg[n - (long_lines + 1)], ixg[n], iyg[n], DGREY);
 
             n++;
         }
@@ -258,29 +233,21 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     {
         int16_t ixs[255] = { INT16_MAX };
         int16_t iys[255] = { INT16_MAX };
+        bool vs[255] = { false };
         int i = 0;
         for (const ORIStar& star : constel.stars)
         {
             float ascension_angle = -getDegrees(star.ra) + ascension;
-            if (angleDistance(ascension_angle) > 90.0f)
-            {
-                ixs[i] = INT16_MAX;
-                iys[i] = INT16_MAX;
-                i++;
-                continue;
-            }
             float declination_angle = getDegrees(star.dec) - declination;
-            if (angleDistance(declination_angle) > 90.0f)
+
+            if (!project(star.vector, cam_mat, tfi, sh, ixs[i], iys[i]))
             {
-                ixs[i] = INT16_MAX;
-                iys[i] = INT16_MAX;
+                vs[i] = false;
                 i++;
                 continue;
             }
 
-            //project(ascension_angle, declination_angle, tan_fov, size_fac, ixs[i], iys[i]);
-            project(getDegrees(star.ra), getDegrees(star.dec), cam_mat, tfi, sh, ixs[i], iys[i]);
-            
+            vs[i] = true;
             uint16_t r = 5;
             if (star.app_mag > 0.5f)
                 r = 4;
@@ -305,14 +272,16 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         auto pit = constel.edges.begin();
         while (pit != constel.edges.end())
         {
-            int16_t sx = ixs[*pit];
-            int16_t sy = iys[*pit];
+            uint16_t i0 = *pit;
+            int16_t sx = ixs[i0];
+            int16_t sy = iys[i0];
             pit++;
-            int16_t ex = ixs[*pit];
-            int16_t ey = iys[*pit];
+            uint16_t i1 = *pit;
+            int16_t ex = ixs[i1];
+            int16_t ey = iys[i1];
             pit++;
 
-            if (sx == INT16_MAX || ex == INT16_MAX)
+            if (!vs[i0] && !vs[i1])
                 continue;
 
             ORIScreen::drawLine(sx, sy, ex, ey, GOLD);
