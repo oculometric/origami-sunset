@@ -126,17 +126,17 @@ void loop()
 #if defined(OPENGL)
     glfwPollEvents();
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera_right -= camera_fov / 460.0f;
+        camera_right -= camera_fov / 160.0f;
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera_right += camera_fov / 460.0f;
+        camera_right += camera_fov / 160.0f;
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_UP) == GLFW_PRESS)
-        camera_up += camera_fov / 460.0f;
+        camera_up += camera_fov / 160.0f;
     if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera_up -= camera_fov / 460.0f;
+        camera_up -= camera_fov / 160.0f;
     if (glfwGetKey(ORIScreen::getWindow(), '.') == GLFW_PRESS)
-        camera_fov += 0.2f;
+        camera_fov += 1.0f;
     if (glfwGetKey(ORIScreen::getWindow(), ',') == GLFW_PRESS)
-        camera_fov -= 0.2f;
+        camera_fov -= 1.0f;
     if (camera_fov < 5.0f)
         camera_fov = 5.0f;
     if (camera_fov > 120.0f)

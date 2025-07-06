@@ -4,6 +4,9 @@
 #include <SPI.h>
 #endif
 
+// prototype screen res 320x170
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
 #if defined(OPENGL)
 #include <GLFW/glfw3.h>
 // janky fix for windows
@@ -32,8 +35,8 @@ static GLFWwindow* window;
 void ORIScreen::initialise()
 {
     // initialise static variables
-    framebuffer_width = 320;
-    framebuffer_height = 170;
+    framebuffer_width = SCREEN_WIDTH;
+    framebuffer_height = SCREEN_HEIGHT;
     if (framebuffer != nullptr)
         delete[] framebuffer;
     framebuffer = new uint16_t[framebuffer_width * framebuffer_height];
