@@ -14,8 +14,8 @@ struct ORIStar
 
     struct Declination
     {
-        int16_t degrees;
-        int16_t minutes;
+        int8_t degrees;
+        int8_t minutes;
         float seconds;
     };
 
@@ -39,7 +39,7 @@ struct ORIConstellation
 {
     const char* name = nullptr;
 
-    std::initializer_list <ORIStar> stars;
+    std::initializer_list<ORIStar> stars;
     std::initializer_list<uint16_t> edges;
 
     /*inline ORIConstellation(const char* _name = nullptr, std::vector<ORIStar> _stars = { }, std::vector<uint16_t> _edges = { })

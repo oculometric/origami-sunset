@@ -144,6 +144,7 @@
     <ClInclude Include="inc\colours.h" />
     <ClInclude Include="inc\compat.h" />
     <ClInclude Include="inc\constellation.h" />
+    <ClInclude Include="inc\constellation_data.h" />
     <ClInclude Include="inc\font.h" />
     <ClInclude Include="inc\font8x16.h" />
     <ClInclude Include="inc\log.h" />

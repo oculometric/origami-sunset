@@ -52,7 +52,6 @@ void loop()
 #if defined(OPENGL)
     auto start = std::chrono::high_resolution_clock::now();
 #endif
-
     //if (flash_counter == 0)
     //    digitalWrite(21, HIGH);
     //if (flash_counter >= 0)

@@ -5,53 +5,7 @@
 #include "compat.h"
 #include "font8x16.h"
 
-const ORIConstellation constellations[2] = 
-{
-    {
-        "scorpius",
-        {
-            ORIStar{ "Antares A",   { 16, 29, 24.47f }, { -26, 25, 55.0f }, 553.0f, -5.24f, 0.91f }, // 0
-            ORIStar{ "lambda Sco",  { 17, 33, 36.53f }, { -37,  6, 13.5f }, 703.0f, -5.05f, 1.62f },
-            ORIStar{ "theta Sco",   { 17, 37, 19.13f }, { -42, 59, 52.2f }, 272.0f, -2.75f, 1.86f }, // 2
-            ORIStar{ "delta Sco",   { 16,  0, 20.01f }, { -22, 37, 17.8f }, 401.0f, -3.16f, 2.29f },
-            ORIStar{ "epsilon Sco", { 16, 50, 10.25f }, { -34, 17, 33.4f },  65.0f,  0.78f, 2.29f }, // 4
-            ORIStar{ "kappa Sco",   { 17, 42, 29.28f }, { -38,  1, 47.7f }, 464.0f, -3.38f, 2.39f },
-            ORIStar{ "Acrab",       { 16,  5, 26.23f }, { -19, 48, 19.4f }, 530.0f, -3.44f, 2.62f }, // 6
-            ORIStar{ "upsilon Sco", { 17, 30, 45.84f }, { -37, 17, 44.7f }, 518.0f, -3.31f, 2.70f },
-            ORIStar{ "tau Sco",     { 16, 35, 52.96f }, { -28, 12, 57.5f }, 430.0f, -2.78f, 2.82f }, // 8
-            ORIStar{ "pi Sco",      { 15, 58, 51.12f }, { -26,  6, 50.6f }, 459.0f, -2.89f, 2.89f },
-            ORIStar{ "sigma Sco",   { 16, 21, 11.32f }, { -25, 35, 33.9f }, 734.0f, -3.86f, 2.90f }, // 10
-        },
-        {
-            0, 10,
-            0, 8,
-            10, 3,
-            3, 6,
-            3, 9,
-            8, 4,
-            4, 2,
-            2, 5,
-            5, 7,
-            7, 1
-        }
-    },
-    {
-        "cassiopeia",
-        {
-            ORIStar{ "alpha Cas",   {  0, 40, 30.39f }, { 56, 32, 14.7f }, 228.0f, -1.99f, 2.24f },
-            ORIStar{ "Caph",        {  0,  9, 10.09f }, { 59,  9,  0.8f }, 54.0f,   1.17f, 2.28f },
-            ORIStar{ "gamma Cas",   {  0, 56, 42.50f }, { 60, 43,  0.3f }, 613.0f, -4.22f, 2.47f },
-            ORIStar{ "delta Cas",   {  1, 25, 48.60f }, { 60, 14,  7.5f }, 99.0f,   0.25f, 2.68f },
-            ORIStar{ "epsilon Cas", {  1, 54, 23.68f }, { 63, 40, 12.5f }, 442.0f, -2.31f, 3.35f }
-        },
-        {
-            1, 0,
-            0, 2,
-            2, 3,
-            3, 4
-        }
-    }
-};
+#include "constellation_data.h"
 
 static float getDegrees(ORIStar::RightAscension ra)
 {
@@ -162,14 +116,19 @@ inline bool project(const float vector[3], float camera[9], float tfish[2], floa
 
 void ORIConstellationViewer::initialiseConstellations()
 {
+    size_t database_size = 0;
     for (const ORIConstellation& constel : constellations)
     {
+        database_size += sizeof(constel);
         auto it = constel.stars.begin();
         while (it != constel.stars.end())
         {
             computeNormal(getDegrees((*it).ra), getDegrees((*it).dec), (float*)((*it).vector));
+            database_size += sizeof(*it);
+            database_size += strlen((*it).name) + 1;
             it++;
         }
+        database_size += constel.edges.size() * sizeof(uint16_t);
     }
 }
 
@@ -186,6 +145,15 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     float tfi[2] = { 1.0f / tan_fov[0], 1.0f / tan_fov[1] };
     float sh[2] = { (float)sz[0] * 0.5f, (float)sz[1] * 0.5f };
     float tfish[2] = { tfi[0] * sh[0], tfi[1] * sh[1] };
+
+    int16_t hrad = sz[0] / (fov / 1.5f);
+    int16_t hlim[4] =
+    {
+        (sz[0] / 2) - hrad,
+        (sz[0] / 2) + hrad,
+        (sz[1] / 2) - hrad,
+        (sz[1] / 2) + hrad
+    };
 
     const float vfov = atan(tan_fov[1]) * 2.0f / pi_180;
 
@@ -233,9 +201,6 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         int i = 0;
         for (const ORIStar& star : constel.stars)
         {
-            float ascension_angle = -getDegrees(star.ra) + ascension;
-            float declination_angle = getDegrees(star.dec) - declination;
-            
             vs[i] = project(star.vector, cam_mat, tfish, sh, sz, ixs[i], iys[i]);
             if (!vs[i])
             {
@@ -244,22 +209,15 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             }
 
             uint16_t r = 5;
-            if (star.app_mag > 0.5f)
-                r = 4;
-            if (star.app_mag > 1.0f)
-                r = 3;
-            if (star.app_mag > 2.0f)
-                r = 2;
-            if (star.app_mag > 2.5f)
-                r = 1;
-            if (star.app_mag > 3.0f)
-                r = 0;
+            if (star.app_mag > 0.5f) r = 4;
+            if (star.app_mag > 1.0f) r = 3;
+            if (star.app_mag > 2.0f) r = 2;
+            if (star.app_mag > 4.0f) r = 1;
+            if (star.app_mag > 6.0f) r = 0;
             ORIScreen::drawCircle(ixs[i], iys[i], r, GOLD, GOLD);
 
-            if (angleDistance(ascension_angle) < 2.0f && angleDistance(declination_angle) < 2.0f)
-            {
+            if (ixs[i] > hlim[0] && ixs[i] < hlim[1] && iys[i] > hlim[2] && iys[i] < hlim[3])
                 ORIScreen::drawText(ixs[i] + 10, iys[i], star.name, WHITE, &terminal_8x16_font);
-            }
 
             i++;
         }

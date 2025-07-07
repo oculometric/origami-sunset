@@ -39,6 +39,9 @@
     <ClInclude Include="inc\terminal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\constellation_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
