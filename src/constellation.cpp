@@ -4,6 +4,7 @@
 #include "colours.h"
 #include "compat.h"
 #include "font8x16.h"
+#include "log.h"
 
 #include "constellation_data.h"
 
@@ -130,10 +131,16 @@ void ORIConstellationViewer::initialiseConstellations()
         }
         database_size += constel.edges.size() * sizeof(uint16_t);
     }
+    ORISerial::print((uint32_t)database_size, 10);
+    ORISerial::printLn("");
 }
 
 // before modifications: 0.14ms
 // after improving mult in project: 0.12ms
+// after adding more constellations: 0.44ms
+// with optimisations: 0.13ms
+// disabling grid: 0.03ms!!!
+// with grid dot product filtering: 0.11ms
 
 void ORIConstellationViewer::drawConstellations(float ascension, float declination, float fov)
 {
@@ -156,6 +163,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     };
 
     const float vfov = atan(tan_fov[1]) * 2.0f / pi_180;
+    const float mcf = cos((vfov > fov ? vfov : fov) * pi_180);
 
     float cam_mat[9] = { 0.0f };
     createCameraRotationMatrix(ascension, declination, cam_mat);
@@ -178,6 +186,12 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             float v[3] = { 0.0f };
             // TODO: pregenerate all of these
             computeNormal(j * long_ang, i * lat_ang, v);
+            float dn = (cam_mat[6] * v[0]) + (cam_mat[7] * v[1]) + (cam_mat[8] * v[2]);
+            if (-dn < mcf)
+            {
+                n++;
+                continue;
+            }
             vg[n] = project(v, cam_mat, tfish, sh, sz, ixg[n], iyg[n]);
             //if (vg[n])
             //    ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
@@ -208,6 +222,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
                 continue;
             }
 
+            // TODO: star radius should depend on zoom
             uint16_t r = 5;
             if (star.app_mag > 0.5f) r = 4;
             if (star.app_mag > 1.0f) r = 3;

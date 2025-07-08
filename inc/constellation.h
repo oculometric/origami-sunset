@@ -7,8 +7,8 @@ struct ORIStar
 {
     struct RightAscension
     {
-        int8_t hours;
-        int8_t minutes;
+        uint8_t hours;
+        uint8_t minutes;
         float seconds;
     };
 
