@@ -307,9 +307,9 @@ void ORIScreen::drawText(int16_t x, int16_t y, const char* t, uint16_t colour, c
             }
         }
         pixel_y = pixel_y_top;
-        pixel_x += glyph_width;
+        pixel_x += glyph_width + 1;
     }
-    setRegionDirty(x, y, glyph_width * cnum, glyph_height);
+    setRegionDirty(x, y, (glyph_width + 1) * cnum, glyph_height);
 }
 
 void ORIScreen::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t colour)
