@@ -118,13 +118,13 @@ void loop()
     std::chrono::duration<float> d = e - s;
     total_time += d.count();
     total_its++;
-    ORISerial::print("camera RA: ");
+    /*ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);
     ORISerial::print(", camera DC: ");
     ORISerial::print(camera_up);
     ORISerial::print(", camera fov: ");
     ORISerial::print(camera_fov);
-    ORISerial::printLn("");
+    ORISerial::printLn("");*/
 
     int16_t cx = ORIScreen::getWidth() / 2;
     int16_t cy = ORIScreen::getHeight() / 2;
