@@ -223,6 +223,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             }
 
             // TODO: star radius should depend on zoom
+            // TODO: better offscreen trimming so that lines that cross the screen are still drawn
             uint16_t r = 5;
             if (star.app_mag > 0.5f) r = 4;
             if (star.app_mag > 1.0f) r = 3;
