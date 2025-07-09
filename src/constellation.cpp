@@ -163,7 +163,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     };
 
     const float vfov = atan(tan_fov[1]) * 2.0f / pi_180;
-    const float mcf = cos((vfov > fov ? vfov : fov) * pi_180);
+    const float mcf = cos((vfov > fov ? vfov : fov) * pi_180) / 1.5f;
 
     float cam_mat[9] = { 0.0f };
     createCameraRotationMatrix(ascension, declination, cam_mat);
@@ -224,6 +224,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
 
             // TODO: star radius should depend on zoom
             // TODO: better offscreen trimming so that lines that cross the screen are still drawn
+            // TODO: only show closest star name
             uint16_t r = 5;
             if (star.app_mag > 0.5f) r = 4;
             if (star.app_mag > 1.0f) r = 3;
