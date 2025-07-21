@@ -11,7 +11,7 @@
 void ORISerial::initialise()
 {
 #if defined(ARDUINO)
-    Serial.begin(/*115200*/ 921600);
+    Serial.begin(115200 /*921600*/);
 #endif
 }
 

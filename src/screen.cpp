@@ -44,6 +44,7 @@ void ORIScreen::initialise()
     clear(0xFFFF);
 
 #if defined(ARDUINO)
+/*
     // initialise the control pins
     pinMode(backlight_pin, OUTPUT);
     pinMode(chip_select_pin, OUTPUT);
@@ -139,6 +140,7 @@ void ORIScreen::initialise()
     sendCommand(0x11);
     delay(120);
     sendCommand(0x29);
+    */
 #endif
 
 #if defined(OPENGL)
@@ -159,43 +161,53 @@ void ORIScreen::initialise()
 #if defined(ARDUINO)
 void ORIScreen::reset()
 {
+    /*
     setActive(true);
     delay(20);
     digitalWrite(reset_pin, LOW);
     delay(20);
     digitalWrite(reset_pin, HIGH);
     delay(50);
+    */
 }
 
 void ORIScreen::sendCommand(uint8_t command)
 {
+    /*
     setActive(true);
     setCommandMode();
     SPI.transfer(command);
     setActive(false);
+    */
 }
 
 void ORIScreen::sendDataByte(uint8_t data)
 {
+    /*
     setActive(true);
     setDataMode();
     SPI.transfer(data);
     setActive(false);
+    */
 }
 
 void ORIScreen::sendDataWord(uint16_t data)
 {
+    /*
     setActive(true);
     setDataMode();
     SPI.transfer16(data);
     setActive(false);
+    */
 }
 #endif
 
 void ORIScreen::setBacklightBrightness(uint8_t brightness)
 {
 #if defined(ARDUINO)
+/*
     analogWrite(backlight_pin, brightness);
+    */
 #endif
 }
 
@@ -430,6 +442,7 @@ void ORIScreen::clear(uint16_t colour)
 void ORIScreen::blit()
 {
 #if defined(ARDUINO)
+/*
 	setActive(true);
     
     // set cursor start & end X command
@@ -470,6 +483,7 @@ void ORIScreen::blit()
     }
     
     setActive(false);
+    */
 #endif
 
 #if defined(OPENGL)

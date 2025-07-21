@@ -13,24 +13,23 @@
 
 void setup()
 {
-    pinMode(21, OUTPUT);
-    digitalWrite(21, HIGH);
+    //pinMode(21, OUTPUT);
+    //digitalWrite(21, HIGH);
 
     ORISerial::initialise();
     ORISerial::printLn("Begin!");
 
     // initialise display control
-    ORIScreen::initialise();
-    ORIScreen::setBacklightBrightness(32);
+    //ORIScreen::initialise();
+    //ORIScreen::setBacklightBrightness(32);
 
     ORISerial::printLn("Hello, cassette!");
 
-    ORIScreen::clear(0b0000000000100010);
+    //ORIScreen::clear(0b0000000000100010);
 
-    ORIConstellationViewer::initialiseConstellations();
+    //ORIConstellationViewer::initialiseConstellations();
 
-        ORISerial::printLn("bonk");
-
+    //ORISerial::printLn("bonk");
 }
 
 int16_t box_x = 0;
@@ -52,6 +51,8 @@ int total_its = 0;
 
 void loop()
 {
+    ORISerial::print("a");
+    return;
 #if defined(OPENGL)
     auto start = std::chrono::high_resolution_clock::now();
 #endif

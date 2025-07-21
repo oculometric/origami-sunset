@@ -19,5 +19,9 @@
 		"chrono": "cpp",
 		"limits": "cpp"
 	},
-    "cmake.sourceDirectory": "/mnt/REPOSITORY/Repository-of-Things/Coding/C/origami-sunset/HTTPRequest"
+	"cmake.sourceDirectory": "/mnt/REPOSITORY/Repository-of-Things/Coding/C/origami-sunset/HTTPRequest",
+	"idf.portWin": "COM6",
+	"idf.openOcdConfigs": [
+		"board/esp32s3-builtin.cfg"
+	]
 }
