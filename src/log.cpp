@@ -92,7 +92,7 @@ void ORISerial::print(const uint32_t i, const uint8_t b)
 void ORISerial::print(const float f)
 {
 #if defined(ARDUINO)
-    Serial.print(i, b);
+    Serial.print(f);
 #endif
 #if defined(OPENGL)
     std::cout << f;

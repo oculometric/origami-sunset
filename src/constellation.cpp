@@ -117,19 +117,23 @@ inline bool project(const float vector[3], float camera[9], float tfish[2], floa
 
 void ORIConstellationViewer::initialiseConstellations()
 {
+    ORISerial::print("here");
     size_t database_size = 0;
     for (const ORIConstellation& constel : constellations)
     {
+        ORISerial::print("look at constel");
         database_size += sizeof(constel);
         auto it = constel.stars.begin();
         while (it != constel.stars.end())
         {
+            ORISerial::print("look at star");
             computeNormal(getDegrees((*it).ra), getDegrees((*it).dec), (float*)((*it).vector));
             database_size += sizeof(*it);
             database_size += strlen((*it).name) + 1;
             it++;
         }
         database_size += constel.edges.size() * sizeof(uint16_t);
+        ORISerial::print("done constel");
     }
     ORISerial::print((uint32_t)database_size, 10);
     ORISerial::printLn("");

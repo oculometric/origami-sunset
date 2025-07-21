@@ -28,6 +28,9 @@ void setup()
     ORIScreen::clear(0b0000000000100010);
 
     ORIConstellationViewer::initialiseConstellations();
+
+        ORISerial::printLn("bonk");
+
 }
 
 int16_t box_x = 0;
@@ -112,11 +115,15 @@ void loop()
     //ORIScreen::drawLine(160, 85, box_x + (box_sx / 2), box_y + (box_sy / 2), ORIColour::GOLD);
     //ORIScreen::drawCircle(box_x, 4, 4, ORIColour::GOLD, ORIColour::RED);
     //ORIScreen::drawCircle(320-4-1, box_y, 4, ORIColour::GOLD, ORIColour::RED);
+#if defined(OPENGL)
     auto s = std::chrono::high_resolution_clock::now();
+#endif
     ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
+#if defined(OPENGL)
     auto e = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> d = e - s;
     total_time += d.count();
+#endif
     total_its++;
     /*ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);
@@ -131,7 +138,7 @@ void loop()
     ORIScreen::drawLine(cx - 4, cy, cx + 5, cy, RED);
     ORIScreen::drawLine(cx, cy - 4, cx, cy + 5, RED);
 
-    ORIScreen::blit();
+    //ORIScreen::blit();
     delay(16);
 #if defined(OPENGL)
     glfwPollEvents();

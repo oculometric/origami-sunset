@@ -15,8 +15,8 @@ private:
 #if defined(ARDUINO)
     static const uint8_t backlight_pin = A2;
     static const uint8_t chip_select_pin = SS;
-    static const uint8_t reset_pin = D4;
-    static const uint8_t data_command_switch_pin = D3;
+    static const uint8_t reset_pin = 0; // D4
+    static const uint8_t data_command_switch_pin = 0; // D3
 #endif
 
     inline ORIScreen() { }

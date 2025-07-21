@@ -19,7 +19,7 @@ struct ORIStar
         float seconds;
     };
 
-    const char* name = nullptr;
+    const char* name;
 
     RightAscension ra;
     Declination dec;
@@ -37,7 +37,7 @@ struct ORIStar
 
 struct ORIConstellation
 {
-    const char* name = nullptr;
+    const char* name;
 
     std::initializer_list<ORIStar> stars;
     std::initializer_list<uint16_t> edges;
