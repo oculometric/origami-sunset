@@ -262,3 +262,5 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         }
     }
 }
+
+// TODO: constellation info overlay (closest constellation is cached)
