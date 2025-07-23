@@ -87,16 +87,16 @@ inline void multiplyMatVec(float mat[9], float vec[3])
 // ix = (((ta + ht) / ht) / 2) * width
 // sw = width / (2 * ht)
 // ix = (ta + ht) * sw
-inline void oldProject(float asc, float dec, float tf[2], float sz[2], int16_t& ix, int16_t& iy)
-{
-    float ar = asc * pi_180;
-    float dr = dec * pi_180;
-    float fx = (tan(ar) / cos(dr)) + tf[0]; // the cosine hack
-    float fy = (tan(dr) / cos(ar)) + tf[1];
-
-    ix = (fx * sz[0]);
-    iy = (fy * sz[1]);
-}
+//inline void oldProject(float asc, float dec, float tf[2], float sz[2], int16_t& ix, int16_t& iy)
+//{
+//    float ar = asc * pi_180;
+//    float dr = dec * pi_180;
+//    float fx = (tan(ar) / cos(dr)) + tf[0]; // the cosine hack
+//    float fy = (tan(dr) / cos(ar)) + tf[1];
+//
+//    ix = (fx * sz[0]);
+//    iy = (fy * sz[1]);
+//}
 
 inline bool project(const float vector[3], float camera[9], float tfish[2], float sh[2], int16_t sz[2], int16_t& ix, int16_t& iy)
 {
@@ -117,26 +117,35 @@ inline bool project(const float vector[3], float camera[9], float tfish[2], floa
 
 void ORIConstellationViewer::initialiseConstellations()
 {
-    ORISerial::print("here");
+    //ORISerial::print("here");
     size_t database_size = 0;
+    size_t constels = 0;
+    size_t stars = 0;
     for (const ORIConstellation& constel : constellations)
     {
-        ORISerial::print("look at constel");
+        //ORISerial::print("look at constel");
         database_size += sizeof(constel);
+        constels++;
         auto it = constel.stars.begin();
         while (it != constel.stars.end())
         {
-            ORISerial::print("look at star");
+            //ORISerial::print("look at star");
+            stars++;
             computeNormal(getDegrees((*it).ra), getDegrees((*it).dec), (float*)((*it).vector));
             database_size += sizeof(*it);
             database_size += strlen((*it).name) + 1;
             it++;
         }
         database_size += constel.edges.size() * sizeof(uint16_t);
-        ORISerial::print("done constel");
+        //ORISerial::print("done constel");
     }
-    ORISerial::print((uint32_t)database_size, 10);
-    ORISerial::printLn("");
+    ORISerial::print("constellations      : ");
+    ORISerial::print((uint32_t)constels);
+    ORISerial::print("\nstars               : ");
+    ORISerial::print((uint32_t)stars);
+    ORISerial::print("\ntotal database size : ");
+    ORISerial::print((uint32_t)database_size);
+    ORISerial::printLn(" bytes.");
 }
 
 // before modifications: 0.14ms
