@@ -19,8 +19,6 @@ void setup()
 
     ORISerial::initialise();
     ORISerial::printLn("Begin!");
-    Serial.flush();
-    Serial.printf("current heap: %d\n", ESP.getFreeHeap());
 
     // initialise display control
     ORIScreen::initialise();
@@ -74,7 +72,7 @@ void loop()
     total_time += d.count();
 #elif defined(ARDUINO)
     unsigned long e = micros();
-    total_time += (float)(e-s) / 1000.0f;
+    total_time += (float)(e-s) / 1000000.0f;
 #endif
     total_its++;
     ORISerial::print("camera RA: ");
@@ -85,7 +83,7 @@ void loop()
     ORISerial::print(camera_fov);
     ORISerial::printLn("");
     ORISerial::print("mean constellation draw time: ");
-    ORISerial::print(total_time / total_its);
+    ORISerial::print((total_time / total_its) * 1000.0f);
     ORISerial::printLn("ms");
 
     int16_t cx = ORIScreen::getWidth() / 2;

@@ -8,8 +8,6 @@
 
 #include "../inc/constellation_data.h"
 
-#include <Arduino.h>
-
 static float getDegrees(ORIStar::RightAscension ra)
 {
     return (float)(ra.hours * 15) + ((float)ra.minutes * 0.25f) + (ra.seconds * 0.004166666667f);
@@ -140,11 +138,7 @@ void ORIConstellationViewer::initialiseConstellations()
         database_size += constel.edges.size() * sizeof(uint16_t);
     }
 
-    Serial.printf("current heap: %d\n", ESP.getFreeHeap());
     star_vectors = new float[3 * stars];
-    Serial.printf("current heap: %d\n", ESP.getFreeHeap());
-    Serial.printf("star vecs: %d\n", star_vectors);
-    Serial.printf("stars: %d, constels: %d\n", stars, constels);
     float* vector = star_vectors;
 
     for (const ORIConstellation& constel : constellations)
@@ -173,12 +167,13 @@ void ORIConstellationViewer::initialiseConstellations()
 // with optimisations: 0.13ms
 // disabling grid: 0.03ms!!!
 // with grid dot product filtering: 0.11ms
+// on the device: 7.95ms (no optimisation?)
 
 void ORIConstellationViewer::drawConstellations(float ascension, float declination, float fov)
 {
     int16_t sz[2] = { ORIScreen::getWidth(), ORIScreen::getHeight() };
     float tan_fov[2] = { 0 };
-        tan_fov[0] = tan((fov * pi_180) / 2.0f);
+        tan_fov[0] = tanf((fov * pi_180) / 2.0f);
         tan_fov[1] = tan_fov[0] * ((float)sz[1] / (float)sz[0]);
 
     float tfi[2] = { 1.0f / tan_fov[0], 1.0f / tan_fov[1] };
@@ -194,8 +189,8 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         (sz[1] / 2) + hrad
     };
 
-    const float vfov = atan(tan_fov[1]) * 2.0f / pi_180;
-    const float mcf = cos((vfov > fov ? vfov : fov) * pi_180) / 1.5f;
+    const float vfov = atanf(tan_fov[1]) * 2.0f / pi_180;
+    const float mcf = cosf((vfov > fov ? vfov : fov) * pi_180) / 1.5f;
 
     float cam_mat[9] = { 0.0f };
     createCameraRotationMatrix(ascension, declination, cam_mat);
