@@ -4,20 +4,23 @@
 #include <iostream>
 #endif
 
-#include "screen.h"
-#include "compat.h"
-#include "log.h"
-#include "colours.h"
-#include "font8x16.h"
-#include "constellation.h"
+#include "../inc/screen.h"
+#include "../inc/compat.h"
+#include "../inc/log.h"
+#include "../inc/colours.h"
+#include "../inc/font8x16.h"
+#include "../inc/constellation.h"
 
 void setup()
 {
-    pinMode(21, OUTPUT);
-    digitalWrite(21, HIGH);
+    //pinMode(21, OUTPUT);
+    //digitalWrite(21, HIGH);
+    delay(1000);
 
     ORISerial::initialise();
     ORISerial::printLn("Begin!");
+    Serial.flush();
+    Serial.printf("current heap: %d\n", ESP.getFreeHeap());
 
     // initialise display control
     ORIScreen::initialise();
@@ -26,6 +29,7 @@ void setup()
     ORISerial::printLn("Hello, cassette!");
 
     ORIScreen::clear(0b0000000000100010);
+    ORISerial::printLn("bink");
 
     ORIConstellationViewer::initialiseConstellations();
 
@@ -60,21 +64,29 @@ void loop()
 
 #if defined(OPENGL)
     auto s = std::chrono::high_resolution_clock::now();
+#elif defined(ARDUINO)
+    unsigned long s = micros();
 #endif
     ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
 #if defined(OPENGL)
     auto e = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> d = e - s;
     total_time += d.count();
-    total_its++;
+#elif defined(ARDUINO)
+    unsigned long e = micros();
+    total_time += (float)(e-s) / 1000.0f;
 #endif
-    /*ORISerial::print("camera RA: ");
+    total_its++;
+    ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);
     ORISerial::print(", camera DC: ");
     ORISerial::print(camera_up);
     ORISerial::print(", camera fov: ");
     ORISerial::print(camera_fov);
-    ORISerial::printLn("");*/
+    ORISerial::printLn("");
+    ORISerial::print("mean constellation draw time: ");
+    ORISerial::print(total_time / total_its);
+    ORISerial::printLn("ms");
 
     int16_t cx = ORIScreen::getWidth() / 2;
     int16_t cy = ORIScreen::getHeight() / 2;

@@ -1,4 +1,4 @@
-#include "screen.h"
+#include "../inc/screen.h"
 
 #if defined(ARDUINO)
 #include <SPI.h>
@@ -18,8 +18,8 @@
 #define PREVIEW_SCALE 3
 #endif
 
-#include "compat.h"
-#include "font.h"
+#include "../inc/compat.h"
+#include "../inc/font.h"
 
 static uint16_t* framebuffer = nullptr;
 static uint16_t framebuffer_width;

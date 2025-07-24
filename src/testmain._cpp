@@ -3,7 +3,7 @@
 uint32_t chipId = 0;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -13,6 +13,10 @@ void loop() {
 
   Serial.printf("ESP32 Chip model = %s Rev %d\n", ESP.getChipModel(), ESP.getChipRevision());
   Serial.printf("This chip has %d cores\n", ESP.getChipCores());
+  Serial.printf("Free heap: %dB\n", ESP.getFreeHeap());
+  Serial.printf("CPU frequency: %dMHz\n", ESP.getCpuFreqMHz());
+  Serial.printf("PSRAM size: %dB\n", ESP.getPsramSize());
+  Serial.printf("Flash size: %d, speed: %d, mode: %d\n", ESP.getFlashChipSize(), ESP.getFlashChipSpeed(), ESP.getFlashChipMode());
   Serial.print("Chip ID: ");
   Serial.println(chipId);
 

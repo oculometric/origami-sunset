@@ -1,12 +1,14 @@
-#include "constellation.h"
+#include "../inc/constellation.h"
 
-#include "screen.h"
-#include "colours.h"
-#include "compat.h"
-#include "font8x16.h"
-#include "log.h"
+#include "../inc/screen.h"
+#include "../inc/colours.h"
+#include "../inc/compat.h"
+#include "../inc/font8x16.h"
+#include "../inc/log.h"
 
-#include "constellation_data.h"
+#include "../inc/constellation_data.h"
+
+#include <Arduino.h>
 
 static float getDegrees(ORIStar::RightAscension ra)
 {
@@ -115,29 +117,46 @@ inline bool project(const float vector[3], float camera[9], float tfish[2], floa
     return true;
 }
 
+static float* star_vectors = nullptr;
+
 void ORIConstellationViewer::initialiseConstellations()
 {
-    //ORISerial::print("here");
     size_t database_size = 0;
     size_t constels = 0;
     size_t stars = 0;
+
     for (const ORIConstellation& constel : constellations)
     {
-        //ORISerial::print("look at constel");
         database_size += sizeof(constel);
         constels++;
         auto it = constel.stars.begin();
         while (it != constel.stars.end())
         {
-            //ORISerial::print("look at star");
             stars++;
-            computeNormal(getDegrees((*it).ra), getDegrees((*it).dec), (float*)((*it).vector));
             database_size += sizeof(*it);
             database_size += strlen((*it).name) + 1;
             it++;
         }
         database_size += constel.edges.size() * sizeof(uint16_t);
-        //ORISerial::print("done constel");
+    }
+
+    Serial.printf("current heap: %d\n", ESP.getFreeHeap());
+    star_vectors = new float[3 * stars];
+    Serial.printf("current heap: %d\n", ESP.getFreeHeap());
+    Serial.printf("star vecs: %d\n", star_vectors);
+    Serial.printf("stars: %d, constels: %d\n", stars, constels);
+    float* vector = star_vectors;
+
+    for (const ORIConstellation& constel : constellations)
+    {
+        auto it = constel.stars.begin();
+        while (it != constel.stars.end())
+        {
+            computeNormal(getDegrees((*it).ra), getDegrees((*it).dec), vector);
+            it++;
+            vector += 3;
+        }
+        database_size += constel.edges.size() * sizeof(uint16_t);
     }
     ORISerial::print("constellations      : ");
     ORISerial::print((uint32_t)constels);
@@ -220,6 +239,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     }
 
     // draw constellations
+    float* vector = star_vectors;
     for (const ORIConstellation& constel : constellations)
     {
         int16_t ixs[255] = { INT16_MAX };
@@ -228,7 +248,8 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
         int i = 0;
         for (const ORIStar& star : constel.stars)
         {
-            vs[i] = project(star.vector, cam_mat, tfish, sh, sz, ixs[i], iys[i]);
+            vs[i] = project(vector, cam_mat, tfish, sh, sz, ixs[i], iys[i]);
+            vector += 3;
             if (!vs[i])
             {
                 i++;

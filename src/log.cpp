@@ -1,4 +1,4 @@
-#include "log.h"
+#include "../inc/log.h"
 
 #if defined(ARDUINO)
 #include <Arduino.h>
@@ -11,7 +11,7 @@
 void ORISerial::initialise()
 {
 #if defined(ARDUINO)
-    Serial.begin(115200 /*921600*/);
+    Serial.begin(9600/*115200*/ /*921600*/);
 #endif
 }
 
@@ -28,7 +28,7 @@ void ORISerial::printLn(const char* text)
 void ORISerial::print(const char* text)
 {
 #if defined(ARDUINO)
-    Serial.println(text);
+    Serial.print(text);
 #endif
 #if defined(OPENGL)
     std::cout << text;
