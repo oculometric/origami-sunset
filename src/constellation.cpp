@@ -270,14 +270,17 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
                 continue;
             }
 
-            // TODO: star radius should depend on zoom
-            uint16_t r = 5;
-            if (star.app_mag > 0.5f) r = 4;
-            if (star.app_mag > 1.0f) r = 3;
-            if (star.app_mag > 2.0f) r = 2;
-            if (star.app_mag > 4.0f) r = 1;
-            if (star.app_mag > 6.0f) r = 0;
-            ORIScreen::drawCircle(ixs[i], iys[i], r, GOLD, GOLD);
+            int16_t r = 6;
+            if (star.app_mag > 0.5f) r = 5;
+            if (star.app_mag > 1.0f) r = 4;
+            if (star.app_mag > 2.0f) r = 3;
+            if (star.app_mag > 4.0f) r = 2;
+            if (star.app_mag > 5.0f) r = 1;
+
+            if (r > 1)
+                ORIScreen::drawCircle(ixs[i], iys[i], r - 1, GOLD, GOLD);
+            else if (r > 0)
+                ORIScreen::setPixel(ixs[i], iys[i], GOLD);
 
             int16_t dist = abs(ixs[i] - shi[0]) + abs(iys[i] - shi[1]) + (int16_t)(star.app_mag * 4.5);
             if (dist < 100 && dist < active_dist)
