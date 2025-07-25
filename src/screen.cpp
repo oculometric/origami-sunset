@@ -15,7 +15,7 @@
 #define GL_UNSIGNED_SHORT_5_6_5 0x8363
 
 #endif
-#define PREVIEW_SCALE 3
+#define PREVIEW_SCALE 2
 #endif
 
 #include "../inc/compat.h"

@@ -51,6 +51,8 @@ float camera_fov = 90.0f;
 float total_time = 0.0f;
 int total_its = 0;
 
+bool show_overlay = true;
+
 void loop()
 {
 #if defined(OPENGL)
@@ -66,6 +68,7 @@ void loop()
     unsigned long s = micros();
 #endif
     ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
+    if (show_overlay) ORIConstellationViewer::drawOverlay();
 #if defined(OPENGL)
     auto e = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> d = e - s;
@@ -75,7 +78,7 @@ void loop()
     total_time += (float)(e-s) / 1000000.0f;
 #endif
     total_its++;
-    ORISerial::print("camera RA: ");
+    /*ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);
     ORISerial::print(", camera DC: ");
     ORISerial::print(camera_up);
@@ -84,12 +87,7 @@ void loop()
     ORISerial::printLn("");
     ORISerial::print("mean constellation draw time: ");
     ORISerial::print((total_time / total_its) * 1000.0f);
-    ORISerial::printLn("ms");
-
-    int16_t cx = ORIScreen::getWidth() / 2;
-    int16_t cy = ORIScreen::getHeight() / 2;
-    ORIScreen::drawLine(cx - 4, cy, cx + 5, cy, RED);
-    ORIScreen::drawLine(cx, cy - 4, cx, cy + 5, RED);
+    ORISerial::printLn("ms");*/
 
     ORIScreen::blit();
     delay(16);
@@ -107,6 +105,9 @@ void loop()
         camera_fov += 1.0f;
     if (glfwGetKey(ORIScreen::getWindow(), ',') == GLFW_PRESS)
         camera_fov -= 1.0f;
+    /*if (glfwGetKey(ORIScreen::getWindow(), 'L') == GLFW_PRESS)
+        show_overlay = !show_overlay;*/
+
     if (camera_fov < 5.0f)
         camera_fov = 5.0f;
     if (camera_fov > 120.0f)

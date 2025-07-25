@@ -50,4 +50,5 @@ class ORIConstellationViewer
 public:
     static void initialiseConstellations();
     static void drawConstellations(float ascension, float declination, float fov);
+    static void drawOverlay();
 };

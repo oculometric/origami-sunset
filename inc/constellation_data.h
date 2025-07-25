@@ -1198,7 +1198,7 @@ static const ORIConstellation constellations[21] =
     {
         "lyra",
         {
-            ORIStar{ "Vega",        { 18, 36, 56.19f }, { 38, 46, 58.8f },  25.0f,  0.58f, 0.03f }, // 0
+            ORIStar{ "Vega",        { 18, 36, 56.34f }, { 38, 46, 58.8f },  25.0f,  0.58f, 0.03f }, // 0
             ORIStar{ "Sulafat",     { 18, 58, 56.62f }, { 32, 41, 22.4f }, 634.0f, -3.20f, 3.25f },
             ORIStar{ "Sheliak",     { 18, 50,  4.79f }, { 33, 21, 45.6f }, 881.0f, -3.64f, 3.52f }, // 2
             ORIStar{ "R Lyr",       { 18, 55, 20.09f }, { 43, 56, 45.2f }, 349.0f, -1.07f, 4.08f },
