@@ -98,21 +98,28 @@ inline void multiplyMatVec(float mat[9], float vec[3])
 //    iy = (fy * sz[1]);
 //}
 
-inline bool project(const float vector[3], float camera[9], float tfish[2], float sh[2], int16_t sz[2], int16_t& ix, int16_t& iy)
+inline uint8_t project(const float vector[3], float camera[9], float tfish[2], float sh[2], int32_t sz[2], int16_t& ix, int16_t& iy)
 {
     float v[3] = { vector[0], vector[1], vector[2] };
     multiplyMatVec(camera, v);
     float inv_depth = -1.0f / v[2];
-    ix = (v[0] * inv_depth * tfish[0]) + sh[0];
-    iy = (v[1] * inv_depth * tfish[1]) + sh[1];
+    int32_t tix = (v[0] * inv_depth * tfish[0]) + sh[0];
+    int32_t tiy = (v[1] * inv_depth * tfish[1]) + sh[1];
+    ix = tix;
+    iy = tiy;
 
-    if (inv_depth < 0.0f)
-        return false;
-    if (ix < 0 || ix >= sz[0])
-        return false;
-    if (iy < 0 || iy >= sz[1])
-        return false;
-    return true;
+    if (inv_depth <= 0.0f)
+        return 0b11111111; // offscreen behind
+    uint8_t ret = 0;
+    if (tix < 0)
+        ret |= 0b00001000;
+    else if (tix >= sz[0])
+        ret |= 0b00000100;
+    if (tiy < 0)
+        ret |= 0b00000010;
+    else if (tiy >= sz[1])
+        ret |= 0b00000001;
+    return ret;
 }
 
 static float* star_vectors = nullptr;
@@ -177,7 +184,7 @@ static int16_t active_y = 0;
 
 void ORIConstellationViewer::drawConstellations(float ascension, float declination, float fov)
 {
-    int16_t sz[2] = { ORIScreen::getWidth(), ORIScreen::getHeight() };
+    int32_t sz[2] = { ORIScreen::getWidth(), ORIScreen::getHeight() };
     float tan_fov[2] = { 0 };
         tan_fov[0] = tanf((fov * pi_180) / 2.0f);
         tan_fov[1] = tan_fov[0] * ((float)sz[1] / (float)sz[0]);
@@ -197,7 +204,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     int16_t shi[2] = { sz[0] / 2, sz[1] / 2 };
 
     const float vfov = atanf(tan_fov[1]) * 2.0f / pi_180;
-    const float mcf = cosf((vfov > fov ? vfov : fov) * pi_180) / 1.5f;
+    const float mcf = cosf((vfov > fov ? vfov : fov) * pi_180) / 2.5f;
 
     float cam_mat[9] = { 0.0f };
     createCameraRotationMatrix(ascension, declination, cam_mat);
@@ -211,7 +218,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     // draw grid
     int16_t ixg[ll_count] = { INT16_MAX };
     int16_t iyg[ll_count] = { INT16_MAX };
-    bool vg[ll_count] = { false };
+    uint8_t vg[ll_count] = { 0b11111111 };
     int n = 0;
     for (int i = -1; i < lat_lines; i++)
     {
@@ -221,19 +228,20 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             // TODO: pregenerate all of these
             computeNormal(j * long_ang, i * lat_ang, v);
             float dn = (cam_mat[6] * v[0]) + (cam_mat[7] * v[1]) + (cam_mat[8] * v[2]);
-            if (-dn < mcf)
+           /* if (-dn < mcf)
             {
                 n++;
+                vg[n] = 0b11111111;
                 continue;
-            }
+            }*/
             vg[n] = project(v, cam_mat, tfish, sh, sz, ixg[n], iyg[n]);
-            //if (vg[n])
-            //    ORIScreen::drawCircle(ixg[n], iyg[n], 1, LGREY, LGREY);
+            /*if (vg[n])
+                ORIScreen::setPixel(ixg[n], iyg[n], LGREY);*/
 
-            if (j >= 0 && (vg[n - 1] || vg[n]))
+            if (j >= 0 && (vg[n - 1] & vg[n]) == 0)
                 ORIScreen::drawLine(ixg[n], iyg[n], ixg[n - 1], iyg[n - 1], DGREY);
 
-            if (i >= 0 && (vg[n - (long_lines + 1)] || vg[n]))
+            if (i >= 0 && (vg[n - (long_lines + 1)] & vg[n]) == 0)
                 ORIScreen::drawLine(ixg[n - (long_lines + 1)], iyg[n - (long_lines + 1)], ixg[n], iyg[n], DGREY);
 
             n++;
@@ -250,20 +258,19 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
     {
         int16_t ixs[255] = { INT16_MAX };
         int16_t iys[255] = { INT16_MAX };
-        bool vs[255] = { false };
+        uint8_t vs[255] = { 0b11111111 };
         int i = 0;
         for (const ORIStar& star : constel.stars)
         {
             vs[i] = project(vector, cam_mat, tfish, sh, sz, ixs[i], iys[i]);
             vector += 3;
-            if (!vs[i])
+            if (vs[i] != 0)
             {
                 i++;
                 continue;
             }
 
             // TODO: star radius should depend on zoom
-            // TODO: better offscreen trimming so that lines that cross the screen are still drawn
             uint16_t r = 5;
             if (star.app_mag > 0.5f) r = 4;
             if (star.app_mag > 1.0f) r = 3;
@@ -297,10 +304,8 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             int16_t ey = iys[i1];
             pit++;
 
-            if (!vs[i0] && !vs[i1])
-                continue;
-
-            ORIScreen::drawLine(sx, sy, ex, ey, GOLD);
+            if ((vs[i0] & vs[i1]) == 0)
+                ORIScreen::drawLine(sx, sy, ex, ey, GOLD);
         }
     }
 }
