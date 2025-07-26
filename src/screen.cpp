@@ -7,7 +7,7 @@
 // prototype screen res 320x170
 // new prototype screen res 820x320
 #define SCREEN_WIDTH 820
-#define SCREEN_HEIGHT 320
+#define SCREEN_HEIGHT 600
 #if defined(OPENGL)
 #include <GLFW/glfw3.h>
 // janky fix for windows
