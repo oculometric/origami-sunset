@@ -282,6 +282,7 @@ void ORIConstellationViewer::drawConstellations(float ascension, float declinati
             else if (r > 0)
                 ORIScreen::setPixel(ixs[i], iys[i], GOLD);
 
+            // TOOD: implement behaviour for detecting duplicate/overlaid stars?
             int16_t dist = abs(ixs[i] - shi[0]) + abs(iys[i] - shi[1]) + (int16_t)(star.app_mag * 4.5);
             if (dist < 100 && dist < active_dist)
             {
