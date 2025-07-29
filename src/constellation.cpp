@@ -150,6 +150,8 @@ void ORIConstellationViewer::initialiseConstellations()
 
     for (const ORIConstellation& constel : constellations)
     {
+        ORISerial::print("computing vectors within ");
+        ORISerial::printLn(constel.name);
         auto it = constel.stars.begin();
         while (it != constel.stars.end())
         {
