@@ -129,6 +129,7 @@ void ORIConstellationViewer::initialiseConstellations()
     size_t database_size = 0;
     size_t constels = 0;
     size_t stars = 0;
+    size_t max_star_name_length = 0;
 
     for (const ORIConstellation& constel : constellations)
     {
@@ -140,6 +141,9 @@ void ORIConstellationViewer::initialiseConstellations()
             stars++;
             database_size += sizeof(*it);
             database_size += strlen((*it).name) + 1;
+            size_t name_len = strlen((*it).name) + strlen(constel.name) + 3;
+            if (name_len > max_star_name_length)
+                max_star_name_length = name_len;
             it++;
         }
         database_size += constel.edges.size() * sizeof(uint16_t);
@@ -165,6 +169,8 @@ void ORIConstellationViewer::initialiseConstellations()
     ORISerial::print((uint32_t)constels);
     ORISerial::print("\nstars               : ");
     ORISerial::print((uint32_t)stars);
+    ORISerial::print("\nlongest summary name: ");
+    ORISerial::print((uint32_t)max_star_name_length);
     ORISerial::print("\ntotal database size : ");
     ORISerial::print((uint32_t)database_size);
     ORISerial::printLn(" bytes.");
@@ -342,114 +348,285 @@ void ORIConstellationViewer::drawOverlay()
     // label
     ORIScreen::drawText(hx + 10, hy, active_star->name, LGREY, &terminal_8x16_font);
 
-    // info bar
-    ORIScreen::fillPixels(0, 0, hx * 2, 20, ORIColour::DGREY);
+    ORIScreen::fillPixels(0, 0, hx * 2, 20, DGREY);
+    int16_t ex_sizex = ((16 * 9) + 12);
+    int16_t ex_sizey = ((9 * 18) + 2);
+    int16_t ex_offsetx = 0;//(hx * 2) - ex_sizex;
+    int16_t ex_offsety = (hy * 2) - (ex_sizey + 40);
+    ORIScreen::fillPixels(ex_offsetx, ex_offsety, ex_sizex, ex_sizey, DGREY);
+    ex_offsety = (hy * 2) - (2 + 16 + 40);
+
     unsigned int buffer_size = 256;
     char* namebuf = new char[buffer_size + 1];
-    memset(namebuf, 0, buffer_size);
-    memcpy(namebuf, active_star->name, strlen(active_star->name));
-    memcpy(namebuf + strlen(active_star->name) + 2, active_constellation->name, strlen(active_constellation->name));
-    namebuf[strlen(active_star->name)] = ' ';
-    namebuf[strlen(active_star->name) + 1] = '(';
-    namebuf[strlen(active_star->name) + strlen(active_constellation->name) + 2] = ')';
-    ORIScreen::drawText(6, 2, namebuf, LGREY, &terminal_8x16_font);
-
     int16_t offset = 0;
 
+    // star and constellation name
+    {
+        memset(namebuf, 0, buffer_size);
+        memcpy(namebuf, active_star->name, strlen(active_star->name));
+        memcpy(namebuf + strlen(active_star->name) + 2, active_constellation->name, strlen(active_constellation->name));
+        namebuf[strlen(active_star->name)] = ' ';
+        namebuf[strlen(active_star->name) + 1] = '(';
+        namebuf[strlen(active_star->name) + strlen(active_constellation->name) + 2] = ')';
+        ORIScreen::drawText(6, 2, namebuf, LGREY, &terminal_8x16_font);
+    }
+
     // ra + dec
-    memset(namebuf, 0, buffer_size);
-    if (active_star->ra.hours < 10)
-        namebuf[0] = '0';
-    _itoa_s(active_star->ra.hours, namebuf + (active_star->ra.hours < 10 ? 1 : 0), 4, 10);
-    offset = hx;
-    namebuf[2] = 'h';
-    namebuf[3] = ' ';
-    if (active_star->ra.minutes < 10)
-        namebuf[4] = '0';
-    _itoa_s(active_star->ra.minutes, namebuf + (active_star->ra.minutes < 10 ? 5 : 4), 4, 10);
-    namebuf[6] = 'm';
-    namebuf[7] = ' ';
-    if (active_star->ra.seconds < 10)
-        namebuf[8] = '0';
-    _itoa_s(floorf(active_star->ra.seconds), namebuf + (active_star->ra.seconds < 10 ? 9 : 8), 4, 10);
-    namebuf[10] = '.';
-    float s2 = (abs(active_star->ra.seconds) - floorf(abs(active_star->ra.seconds))) * 100.0f;
-    if (s2 < 10)
-        namebuf[11] = '0';
-    _itoa_s(floorf(s2), namebuf + (s2 < 10 ? 12 : 11), 4, 10);
-    namebuf[13] = 's';
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = 'R';
+        namebuf[1] = 'A';
+        namebuf[2] = ' ';
+        if (active_star->ra.hours < 10)
+            namebuf[3] = '0';
+        _itoa_s(active_star->ra.hours, namebuf + (active_star->ra.hours < 10 ? 4 : 3), 4, 10);
+        offset = hx;
+        namebuf[5] = 'h';
+        namebuf[6] = ' ';
+        if (active_star->ra.minutes < 10)
+            namebuf[7] = '0';
+        _itoa_s(active_star->ra.minutes, namebuf + (active_star->ra.minutes < 10 ? 8 : 7), 4, 10);
+        namebuf[9] = 'm';
+        namebuf[10] = ' ';
+        if (active_star->ra.seconds < 10)
+            namebuf[11] = '0';
+        _itoa_s(floorf(active_star->ra.seconds), namebuf + (active_star->ra.seconds < 10 ? 12 : 11), 4, 10);
+        namebuf[13] = '.';
+        float s2 = (abs(active_star->ra.seconds) - floorf(abs(active_star->ra.seconds))) * 100.0f;
+        if (s2 < 10)
+            namebuf[14] = '0';
+        _itoa_s(floorf(s2), namebuf + (s2 < 10 ? 15 : 14), 4, 10);
+        namebuf[16] = 's';
 
-    namebuf[14] = ' ';
-    namebuf[15] = ' ';
-    namebuf[16] = ' ';
+        namebuf[17] = ' ';
+        namebuf[18] = ' ';
+        namebuf[19] = ' ';
 
-    char* tmp = namebuf + 16;
-    if (active_star->dec.degrees < 0)
-        tmp[-1] = '-';
-    if (abs(active_star->dec.degrees) < 10)
-        tmp[0] = '0';
-    _itoa_s(abs(active_star->dec.degrees), tmp + (abs(active_star->dec.degrees) < 10 ? 1 : 0), 4, 10);
-    offset = hx;
-    tmp[2] = 'd';
-    tmp[3] = ' ';
-    if (active_star->dec.minutes < 10)
-        tmp[4] = '0';
-    _itoa_s(active_star->dec.minutes, tmp + (active_star->dec.minutes < 10 ? 5 : 4), 4, 10);
-    tmp[6] = 'm';
-    tmp[7] = ' ';
-    if (active_star->dec.seconds < 10)
-        tmp[8] = '0';
-    _itoa_s(floorf(active_star->dec.seconds), tmp + (active_star->dec.seconds < 10 ? 9 : 8), 4, 10);
-    tmp[10] = '.';
-    s2 = (abs(active_star->dec.seconds) - floorf(abs(active_star->dec.seconds))) * 100.0f;
-    if (s2 < 10)
-        tmp[11] = '0';
-    _itoa_s(floorf(s2), tmp + (s2 < 10 ? 12 : 11), 4, 10);
-    tmp[13] = 's';
+        namebuf[20] = 'D';
+        namebuf[21] = 'E';
+        namebuf[22] = 'C';
+        namebuf[23] = ' ';
+        char* tmp = namebuf + 25;
+        if (active_star->dec.degrees < 0)
+            tmp[-1] = '-';
+        else
+            tmp[-1] = '+';
+        if (abs(active_star->dec.degrees) < 10)
+            tmp[0] = '0';
+        _itoa_s(abs(active_star->dec.degrees), tmp + (abs(active_star->dec.degrees) < 10 ? 1 : 0), 4, 10);
+        tmp[2] = 'd';
+        tmp[3] = ' ';
+        if (active_star->dec.minutes < 10)
+            tmp[4] = '0';
+        _itoa_s(active_star->dec.minutes, tmp + (active_star->dec.minutes < 10 ? 5 : 4), 4, 10);
+        tmp[6] = 'm';
+        tmp[7] = ' ';
+        if (active_star->dec.seconds < 10)
+            tmp[8] = '0';
+        _itoa_s(floorf(active_star->dec.seconds), tmp + (active_star->dec.seconds < 10 ? 9 : 8), 4, 10);
+        tmp[10] = '.';
+        s2 = (abs(active_star->dec.seconds) - floorf(abs(active_star->dec.seconds))) * 100.0f;
+        if (s2 < 10)
+            tmp[11] = '0';
+        _itoa_s(floorf(s2), tmp + (s2 < 10 ? 12 : 11), 4, 10);
+        tmp[13] = 's';
 
-    ORIScreen::drawText(offset, 2, namebuf, LGREY, &terminal_8x16_font);
+        offset = (hx * 2) - ((39 * 9) + 6);
+        ORIScreen::drawText(offset, 2, namebuf, LGREY, &terminal_8x16_font);
+    }
 
     // magnitude
-    memset(namebuf, 0, buffer_size);
-    offset = hx - (8 * 20);
-    if (active_star->app_mag < 0)
-        namebuf[0] = '-';
-    else namebuf[0] = '+';
-    if (abs(active_star->app_mag) < 1)
-        namebuf[1] = '0';
-    else
-        _itoa_s(floorf(abs(active_star->app_mag)), namebuf + 1, 4, 10);
-    namebuf[2] = '.';
-    s2 = (abs(active_star->app_mag) - floorf(abs(active_star->app_mag))) * 100.0f;
-    if (s2 < 10)
-        namebuf[3] = '0';
-    _itoa_s(floorf(s2), namebuf + (s2 < 10 ? 4 : 3), 4, 10);
-    namebuf[5] = ' ';
-    namebuf[6] = '(';
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = 'A';
+        namebuf[1] = 'P';
+        namebuf[2] = 'P';
+        namebuf[3] = '_';
+        namebuf[4] = 'M';
+        namebuf[5] = 'A';
+        namebuf[6] = 'G';
+        namebuf[7] = ' ';
+        size_t coff = 8;
+        if (active_star->app_mag < 0)
+            namebuf[coff] = '-';
+        else namebuf[coff] = '+';
+        if (abs(active_star->app_mag) < 1)
+            namebuf[coff + 1] = '0';
+        else
+            _itoa_s(floorf(abs(active_star->app_mag)), namebuf + coff + 1, 4, 10);
+        namebuf[coff + 2] = '.';
+        float s2 = (abs(active_star->app_mag) - floorf(abs(active_star->app_mag))) * 100.0f;
+        if (s2 < 10)
+            namebuf[coff + 3] = '0';
+        _itoa_s(floorf(s2), namebuf + coff + (s2 < 10 ? 4 : 3), 4, 10);
 
-    tmp = namebuf + 7;
-    if (active_star->abs_mag < 0)
-        tmp[0] = '-';
-    else tmp[0] = '+';
-    if (abs(active_star->abs_mag) < 1)
-        tmp[1] = '0';
-    else
-        _itoa_s(floorf(abs(active_star->abs_mag)), tmp + 1, 4, 10);
-    tmp[2] = '.';
-    s2 = (abs(active_star->abs_mag) - floorf(abs(active_star->abs_mag))) * 100.0f;
-    if (s2 < 10)
-        tmp[3] = '0';
-    _itoa_s(floorf(s2), tmp + (s2 < 10 ? 4 : 3), 4, 10);
-    tmp[5] = ')';
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
 
-    ORIScreen::drawText(offset, 2, namebuf, LGREY, &terminal_8x16_font);
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = 'A';
+        namebuf[1] = 'B';
+        namebuf[2] = 'S';
+        namebuf[3] = '_';
+        namebuf[4] = 'M';
+        namebuf[5] = 'A';
+        namebuf[6] = 'G';
+        namebuf[7] = ' ';
+
+        coff = 8;
+        if (active_star->abs_mag < 0)
+            namebuf[coff] = '-';
+        else namebuf[coff] = '+';
+        if (abs(active_star->abs_mag) < 1)
+            namebuf[coff + 1] = '0';
+        else
+            _itoa_s(floorf(abs(active_star->abs_mag)), namebuf + coff + 1, 4, 10);
+        namebuf[coff + 2] = '.';
+        s2 = (abs(active_star->abs_mag) - floorf(abs(active_star->abs_mag))) * 100.0f;
+        if (s2 < 10)
+            namebuf[coff + 3] = '0';
+        _itoa_s(floorf(s2), namebuf + coff + (s2 < 10 ? 4 : 3), 4, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
 
     // distance
-    memset(namebuf, 0, buffer_size);
-    _itoa_s((int)active_star->dist, namebuf, buffer_size, 10);
-    offset = (hx * 2) - (6 + (8 * 6));
-    ORIScreen::drawText(offset - 8, 2, namebuf, LGREY, &terminal_8x16_font);
-    ORIScreen::drawText(offset + (8 * 4), 2, "ly", LGREY, &terminal_8x16_font);
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = 'D';
+        namebuf[1] = 'I';
+        namebuf[2] = 'S';
+        namebuf[3] = 'T';
+        namebuf[4] = '_';
+        namebuf[5] = 'L';
+        namebuf[6] = 'Y';
+        namebuf[7] = ' ';
+        _itoa_s((int)active_star->dist, namebuf + 8, 8, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
+
+    // bayer
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = ' ';
+        namebuf[1] = ' ';
+        namebuf[2] = 'B';
+        namebuf[3] = 'A';
+        namebuf[4] = 'Y';
+        namebuf[5] = 'E';
+        namebuf[6] = 'R';
+        namebuf[7] = ' ';
+        if (active_star->byr_ident[0] == '\0')
+            namebuf[8] = '-';
+        else
+            memcpy(namebuf + 8, active_star->byr_ident, sizeof(ORIStar::byr_ident));
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
+
+    // flm
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = 'F';
+        namebuf[1] = 'L';
+        namebuf[2] = 'A';
+        namebuf[3] = 'M';
+        namebuf[4] = 'S';
+        namebuf[5] = 'T';
+        namebuf[6] = 'D';
+        namebuf[7] = ' ';
+        if (active_star->flm_ident == 0)
+            namebuf[8] = '-';
+        else
+            _itoa_s((int)active_star->flm_ident, namebuf + 8, 12, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
+
+    // hd
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = ' ';
+        namebuf[1] = ' ';
+        namebuf[2] = ' ';
+        namebuf[3] = ' ';
+        namebuf[4] = ' ';
+        namebuf[5] = 'H';
+        namebuf[6] = 'D';
+        namebuf[7] = ' ';
+        if (active_star->hd_ident == 0)
+            namebuf[8] = '-';
+        else
+            _itoa_s((int)active_star->hd_ident, namebuf + 8, 12, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
+
+    // hip
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = ' ';
+        namebuf[1] = ' ';
+        namebuf[2] = ' ';
+        namebuf[3] = ' ';
+        namebuf[4] = 'H';
+        namebuf[5] = 'I';
+        namebuf[6] = 'P';
+        namebuf[7] = ' ';
+        if (active_star->hip_ident == 0)
+            namebuf[8] = '-';
+        else
+            _itoa_s((int)active_star->hip_ident, namebuf + 8, 12, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
+
+    // ngc
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = ' ';
+        namebuf[1] = ' ';
+        namebuf[2] = ' ';
+        namebuf[3] = ' ';
+        namebuf[4] = 'N';
+        namebuf[5] = 'G';
+        namebuf[6] = 'C';
+        namebuf[7] = ' ';
+        if (active_star->ngc_ident == 0)
+            namebuf[8] = '-';
+        else
+            _itoa_s((int)active_star->ngc_ident, namebuf + 8, 12, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
+
+    // mes
+    {
+        memset(namebuf, 0, buffer_size);
+        namebuf[0] = 'M';
+        namebuf[1] = 'E';
+        namebuf[2] = 'S';
+        namebuf[3] = 'S';
+        namebuf[4] = 'I';
+        namebuf[5] = 'E';
+        namebuf[6] = 'R';
+        namebuf[7] = ' ';
+        if (active_star->mes_ident == 0)
+            namebuf[8] = '-';
+        else
+            _itoa_s((int)active_star->mes_ident, namebuf + 8, 12, 10);
+
+        ORIScreen::drawText(ex_offsetx + 6, ex_offsety, namebuf, LGREY, &terminal_8x16_font);
+        ex_offsety -= 18;
+    }
 
     delete[] namebuf;
 }
