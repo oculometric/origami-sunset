@@ -1,0 +1,9 @@
+create index * on total_hipparcos(name)
+create index * on total_hipparcos(ra)
+create index * on total_hipparcos(dec)
+create index * on total_hipparcos(lii)
+create index * on total_hipparcos(bii)
+create index * on total_hipparcos(hip_number)
+create index * on total_hipparcos(class)
+
+exit

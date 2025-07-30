@@ -1,0 +1,61 @@
+<HEADER>
+#
+#         TABLE: heasarc_messier
+#      LOCATION: dbms1.gsfc.nasa.gov:heasarcprod
+#    TOTAL ROWS: 109
+#
+# CREATION DATE: 2020-07-23 19:12:17
+# LAST MODIFIED: 2022-02-03 20:15:14
+#   EXGEST DATE: 2022-02-04 00:43:04
+#
+table_name = heasarc_messier
+table_description = "Messier Nebulae"
+table_document_url = http://heasarc.gsfc.nasa.gov/W3Browse/general-catalog/messier.html
+table_security = public
+#
+# Table Parameters
+#
+field[alt_name] = char10  [meta.id] (index) // Alternate designation
+field[bii] = float8_degree [pos.galactic.lat] (index) // Galactic Latitude
+field[class] = int2  [src.class] (index) // Browse Object Classification
+field[constell] = char4  [meta.code;pos] (index) // Constellation of Origin
+field[dec] = float8:.4f_degree [pos.eq.dec;meta.main] (index) // Declination
+field[dimension] = char6_arcmin [phys.angSize] (index) // Dimensions of the Source
+field[lii] = float8_degree [pos.galactic.lon] (index) // Galactic Longitude
+field[name] = char6  [meta.id;meta.main] (index) // Source designation
+field[notes] = char50  [meta.note] (index) // Notes
+field[object_type] = char2  [src.class] (index) // Object Category
+field[ra] = float8:.4f_degree [pos.eq.ra;meta.main] (index) // Right Ascension
+field[vmag] = float4:4.1f  [phot.mag;em.opt.V] (index) // Visual Magnitude
+field[vmag_uncert] = char2  [stat.error;phot.mag;em.opt.V] (index) // Magnitude Uncertainty
+#
+parameter_defaults = name alt_name ra dec constell dimension vmag vmag_uncert class
+#
+# Virtual Parameters
+#
+catalog_bibcode = 1781cote.rept..227M
+catalog_bibcode = 1985skca.book.....H
+declination = @dec
+default_search_radius = 60
+equinox = 2000
+frequency_regime = Optical
+observatory_name = GENERAL CATALOG
+right_ascension = @ra
+row_type = Galaxy
+row_type = Nebula
+row_type = Star Cluster
+table_author = Messier; Hirshfeld, Sinnott; HEASARC
+table_priority = 3
+table_type = Object
+target_name = @name
+unique_key = name
+#
+# Relationship Definitions
+#
+relate[class] = heasarc_class(class_id)
+#
+# Data Format Specification
+#
+line[1] = alt_name bii class constell dec dimension lii name notes object_type ra vmag vmag_uncert
+#
+<DATA>

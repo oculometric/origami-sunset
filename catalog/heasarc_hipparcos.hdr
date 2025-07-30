@@ -1,0 +1,125 @@
+<HEADER>
+#
+#         TABLE: heasarc_hipparcos
+#      LOCATION: dbms1.gsfc.nasa.gov:heasarcprod
+#    TOTAL ROWS: 118218
+#
+# CREATION DATE: 2020-09-28 16:25:20
+# LAST MODIFIED: 2022-02-05 00:57:10
+#   EXGEST DATE: 2022-02-05 01:27:16
+#
+table_name = heasarc_hipparcos
+table_description = "Hipparcos Main Catalog"
+table_document_url = http://heasarc.gsfc.nasa.gov/W3Browse/star-catalog/hipparcos.html
+table_security = public
+#
+# Table Parameters
+#
+field[name] = char10  [meta.id;meta.main] (index) // Catalog Designation from Hipparcos Number
+field[ra] = float8:.8f_degree [pos.eq.ra;meta.main] (index) // Right Ascension
+field[dec] = float8:.8f_degree [pos.eq.dec;meta.main] (key) // Declination
+field[lii] = float8:.8f_degree [pos.galactic.lon] (index) // Galactic Longitude
+field[bii] = float8:.8f_degree [pos.galactic.lat] (index) // Galactic Latitude
+field[hip_number] = int4:6d  [meta.id] (index) // Identifier (HIP Number)
+field[prox_10asec] = char1  [meta.code] (index) // 10-arcsec Proximity Flag
+field[vmag] = float8:5.2f_mag [phot.mag;em.opt.V] (index) // Magnitude in Johnson V
+field[var_flag] = int1:1d  [meta.code;src.var] (index) // Coarse Variability Flag
+field[vmag_source] = char1  [meta.ref;phot.mag;em.opt.V]  // Source of V Magnitude
+field[ra_deg] = char12_degree [pos.pm;pos.eq.ra]  // Right Ascension (ICRS, Epoch J1991.25)
+field[dec_deg] = char12_degree [pos.eq.dec]  // Declination (ICRS, Epoch J1991.25)
+field[astrom_ref_dbl] = char1  [meta.ref;src]  // Reference Flag for Astrometry
+field[parallax] = float8:7.2f_mas [pos.parallax.trig] (index) // Trigonometric Parallax (mas)
+field[pm_ra] = float8:8.2f_mas/yr [pos.pm;pos.eq.ra] (index) // Proper Motion in RA (mas/yr)
+field[pm_dec] = float8:8.2f_mas/yr [pos.pm;pos.eq.dec] (index) // Proper Motion in Dec (mas/yr)
+field[ra_error] = float8:6.2f_mas [stat.error;pos.eq.ra]  // Standard Error in RA (mas)
+field[dec_error] = float8:6.2f_mas [stat.error;pos.eq.dec]  // Standard Error in Dec (mas)
+field[parallax_error] = float8:6.2f_mas [stat.error;pos.parallax.trig]  // Standard Error in Parallax (mas)
+field[pm_ra_error] = float8:6.2f_mas/yr [stat.error;pos.pm;pos.eq.ra]  // Standard Error in pmRA (mas/yr)
+field[pm_dec_error] = float8:6.2f_mas/yr [stat.error;pos.pm;pos.eq.dec]  // Standard Error in pmDec (mas/yr)
+field[crl_dec_ra] = float8:5.2f  [stat.correlation;pos.eq.dec;pos.eq.ra]  // Correlation Coefficient: (Dec over RA)
+field[crl_plx_ra] = float8:5.2f  [stat.correlation;pos.parallax.trig;pos.eq.ra]  // Correlation Coefficient: (Parallax over RA)
+field[crl_plx_dec] = float8:5.2f  [stat.correlation;pos.parallax.trig;pos.eq.dec]  // Correlation Coefficient: (Parallax over Dec)
+field[crl_pmra_ra] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.ra;pos.eq.ra]  // Correlation Coefficient: (pmRA over RA)
+field[crl_pmra_dec] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.ra;pos.eq.dec]  // Correlation Coefficient: (pmRA over Dec)
+field[crl_pmra_plx] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.ra;pos.parallax.trig]  // Correlation Coefficient: (pmRA over Parllx)
+field[crl_pmdec_ra] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.dec;pos.eq.ra]  // Correlation Coefficient: (pmDec over RA)
+field[crl_pmdec_dec] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.dec]  // Correlation Coefficient: (pmDec over Dec)
+field[crl_pmdec_plx] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.dec;pos.parallax.trig]  // Correlation Coefficient: (pmDec over Parllx)
+field[crl_pmdec_pmra] = float8:5.2f  [stat.correlation;pos.pm;pos.eq.dec;pos.pm;pos.eq.ra]  // Correlation Coefficient: (pmDec over pmRA)
+field[reject_percent] = int1:3d_percent  // Percentage of Rejected Data
+field[quality_fit] = float8:5.2f  [stat.fit.goodness] (index) // Goodness-of-Fit Parameter
+field[bt_mag] = float8:6.3f_mag [phot.mag;em.opt.B]  // Mean B_T Magnitude
+field[bt_mag_error] = float8:5.3f_mag [stat.error;phot.mag;em.opt.B]  // Standard Error on B_T Magnitude
+field[vt_mag] = float8:6.3f_mag [phot.mag;em.opt.V]  // Mean V_T Magnitude
+field[vt_mag_error] = float8:5.3f_mag [stat.error;phot.mag;em.opt.V]  // Standard Error on V_T Magnitude
+field[bt_mag_ref_dbl] = char1  [meta.code.multip;phot.mag]  // Reference flag for B_T and V_T
+field[bv_color] = float8:6.3f_mag [phot.color;em.opt.B;em.opt.V]  // Johnson B-V Color
+field[bv_color_error] = float8:5.3f_mag [stat.error;phot.color;em.opt.B;em.opt.V]  // Standard Error on B-V Color
+field[bv_mag_source] = char1  [meta.ref;phot.color;em.opt.B;em.opt.V]  // Source of B-V (G=Ground, T=Tycho)
+field[vi_color] = float8:4.2f_mag [phot.color;em.opt.V;em.opt.I]  // Cousins V-I Color Index
+field[vi_color_error] = float8:4.2f_mag [stat.error;phot.color;em.opt.V;em.opt.I]  // Standard Error on V-I
+field[vi_color_source] = char1  [meta.ref;phot.color;em.opt.V;em.opt.I]  // Source of V-I Color
+field[mag_ref_dbl] = char1  [meta.code;phot.mag;em.opt.V]  // Flag for Combined Vmag/B-V/V-I
+field[hip_mag] = float8:7.4f_mag [phot.mag;em.opt.V]  // Median Hipparcos Magnitude H_P
+field[hip_mag_error] = float8:6.4f_mag [stat.error;phot.mag;em.opt.V]  // Standard Error on Median Hipparcos Magnitude
+field[scat_hip_mag] = float8:5.3f_mag [stat.variance;phot.mag;em.opt.V]  // Scatter in Median Hipparcos Magnitude
+field[n_obs_hip_mag] = int2:3d  [meta.number;obs]  // Number of Observations for Median Hipparcos Magnitude
+field[hip_mag_ref_dbl] = char1  [meta.code.multip;phot.mag;em.opt.V]  // Reference Flag for Hipparcos Magnitude
+field[hip_mag_max] = float8:5.2f_mag [phot.mag;em.opt.V;stat.max]  // Hipparcos Magnitude at Max (5th percentile)
+field[hip_mag_min] = float8:5.2f_mag [phot.mag;em.opt.V;stat.min]  // Hipparcos Magnitude at Min (95th percentile)
+field[var_period] = float8:7.2f_d [time.period]  // Variability Period (days)
+field[hip_var_type] = char1  [meta.code;src.var]  // Variability Type: [CDMPRU]
+field[var_data_annex] = char1  [meta.code;src.var]  // Annex Data about Variability
+field[var_curv_annex] = char1  [meta.code;src.var]  // Light Curve Annex
+field[ccdm_id] = char10  [meta.id.cross]  // CCDM Identifier
+field[ccdm_history] = char1  [meta.code.multip]  // CCDM_Id Historical Status Flag
+field[ccdm_n_entries] = int1:2d  [meta.number]  // Number of Entries with Same CCDM
+field[ccdm_n_comp] = int1:2d  [meta.code.multip]  // Number of Components in the Entry
+field[dbl_mult_annex] = char1  [meta.code.multip]  // Double and Multiple Systems Flag
+field[astrom_mult_source] = char1  [meta.ref;pos]  // Astrometry Source Flag
+field[dbl_soln_qual] = char1  [meta.code.qual]  // Solution Quality Flag
+field[dbl_ref_id] = char2  [meta.code.multip]  // Double Star Component Identifiers
+field[dbl_theta] = int2:3d_degree [pos.posAng]  // Component Position Angle (degrees)
+field[dbl_rho] = float8:7.3f_arcsec [pos.angDistance]  // Component Angular Separation (arcsec)
+field[rho_error] = float8:5.3f_arcsec [stat.error;pos.angDistance]  // Standard Error in Dbl_Rho (arcsec)
+field[diff_hip_mag] = float8:5.2f_mag [phot.mag;arith.diff]  // Hip_Mag difference of Components
+field[dhip_mag_error] = float8:4.2f_mag [stat.error;phot.mag;em.opt.V;arith.diff]  // Standard Error on Diff_Hip_Mag
+field[survey_star] = char1  [meta.code;obs]  // Flag Indicating a Survey Star
+field[id_chart] = char1  [meta.note]  // Flag for Identification Chart
+field[notes] = char1  [meta.note]  // Flag for Existence of Notes
+field[hd_id] = int4:6d  [meta.id.cross]  // HD/HDE/HDEC Number
+field[bd_id] = char10  [meta.id.cross]  // Bonner Durchmusterung (BD) Identification
+field[cod_id] = char10  [meta.id.cross]  // Cordoba Durchmusterung (CoD) Identification
+field[cpd_id] = char10  [meta.id.cross]  // Cape Photographic Durchmusterung (CPD) Identification
+field[vi_color_reduct] = float8:4.2f_mag [phot.color;em.opt.V;em.opt.I]  // V-I Color Used for Reductions
+field[spect_type] = char12  [src.spType] (index) // Spectral Type
+field[spect_type_source] = char1  [meta.ref;src.spType]  // Source of Spectral Type
+field[class] = int2  [src.class] (index) // Browse Object Classification
+#
+parameter_defaults = name ra dec pm_ra pm_dec parallax spect_type
+#
+# Virtual Parameters
+#
+catalog_bibcode = 1997A&A...323L..49P
+declination = @dec
+default_search_radius = 1
+equinox = 2000
+frequency_regime = Optical
+observatory_name = STAR CATALOG
+right_ascension = @ra
+row_type = Star
+table_author = Perryman et al.
+table_priority = 3
+table_type = Object
+target_name = @name
+unique_key = name
+#
+# Relationship Definitions
+#
+relate[class] = heasarc_class(class_id)
+#
+# Data Format Specification
+#
+line[1] = name ra dec lii bii hip_number prox_10asec vmag var_flag vmag_source ra_deg dec_deg astrom_ref_dbl parallax pm_ra pm_dec ra_error dec_error parallax_error pm_ra_error pm_dec_error crl_dec_ra crl_plx_ra crl_plx_dec crl_pmra_ra crl_pmra_dec crl_pmra_plx crl_pmdec_ra crl_pmdec_dec crl_pmdec_plx crl_pmdec_pmra reject_percent quality_fit bt_mag bt_mag_error vt_mag vt_mag_error bt_mag_ref_dbl bv_color bv_color_error bv_mag_source vi_color vi_color_error vi_color_source mag_ref_dbl hip_mag hip_mag_error scat_hip_mag n_obs_hip_mag hip_mag_ref_dbl hip_mag_max hip_mag_min var_period hip_var_type var_data_annex var_curv_annex ccdm_id ccdm_history ccdm_n_entries ccdm_n_comp dbl_mult_annex astrom_mult_source dbl_soln_qual dbl_ref_id dbl_theta dbl_rho rho_error diff_hip_mag dhip_mag_error survey_star id_chart notes hd_id bd_id cod_id cpd_id vi_color_reduct spect_type spect_type_source class
+#
+<DATA>

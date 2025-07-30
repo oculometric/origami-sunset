@@ -1,0 +1,58 @@
+<HEADER>
+#
+#         TABLE: heasarc_hd
+#      LOCATION: dbms1.gsfc.nasa.gov:heasarcprod
+#    TOTAL ROWS: 272150
+#
+# CREATION DATE: 2020-07-23 18:48:32
+# LAST MODIFIED: 2020-07-23 18:48:32
+#   EXGEST DATE: 2020-10-07 02:30:48
+#
+table_name = heasarc_hd
+table_description = "Henry Draper (HD) Catalog"
+table_document_url = http://heasarc.gsfc.nasa.gov/W3Browse/star-catalog/hd.html
+table_security = public
+#
+# Table Parameters
+#
+field[bii] = float4:.4f_degree  // Galactic Latitude
+field[class] = int2  (index) // Browse Object Classification
+field[dec] = float8:.4f_degree (key) // Declination
+field[dircos1] = float8   // 1st Directional Cosine
+field[dircos2] = float8   // 2nd Directional Cosine
+field[dircos3] = float8   // 3rd Directional Cosine
+field[hd_number] = int4  (index) // HD Catalog Number
+field[lii] = float4:.4f_degree  // Galactic Longitude
+field[multiplicity_flag] = int2  (index) // 0=single stars, 1=multiple systems
+field[name] = char20  (index) // Object Designation
+field[pgmag] = float4  (index) // Photographic Magnitude
+field[ra] = float8:.4f_degree (key) // Right Ascension
+field[spectral_type] = char4  (index) // Spectral Type
+field[variability_flag] = int2  (index) // Variability Flag: 0=not variable, 1=variable, 2=uncertain
+field[vmag] = float4:5.1f  (index) // V Magnitude
+#
+parameter_defaults = name ra dec vmag spectral_type class
+#
+# Virtual Parameters
+#
+declination = @dec
+default_search_radius = 2
+equinox = 2000
+frequency_regime = Optical
+observatory_name = STAR CATALOG
+right_ascension = @ra
+table_priority = 8
+table_type = Object
+target_name = @name
+unique_key = name
+w3browse_display = N
+#
+# Relationship Definitions
+#
+relate[class] = heasarc_class(class_id)
+#
+# Data Format Specification
+#
+line[1] = bii class dec dircos1 dircos2 dircos3 hd_number lii multiplicity_flag name pgmag ra spectral_type variability_flag vmag
+#
+<DATA>

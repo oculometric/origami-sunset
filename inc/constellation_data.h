@@ -6238,7 +6238,7 @@ static const ORIConstellation constellations[88] =
     {
         "sagittarius",
         {
-            ORIStar{ "Kaus Australis", { 18, 24, 10.35f }, { -34, 23, 3.5f }, 145.0f, -1.44f, 1.79f }, // 0
+            ORIStar{ "Kaus Australis", { 18, 24, 10.35f }, { -34, 23, 3.5f }, 145.0f, -1.44f, 1.79f, "epsilon", 20, 169022, 90185 }, // 0
             ORIStar{ "Nunki", { 18, 55, 15.92f }, { -26, 17, 47.7f }, 224.0f, -2.14f, 2.05f },
             ORIStar{ "Ascella", { 19, 2, 36.72f }, { -29, 52, 48.4f }, 89.0f, 0.42f, 2.60f }, // 2
             ORIStar{ "Kaus Media", { 18, 20, 59.62f }, { -29, 49, 40.9f }, 306.0f, -2.14f, 2.72f },
