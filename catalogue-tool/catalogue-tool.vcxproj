@@ -124,7 +124,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="catalogue-tool.cpp" />
+    <ClInclude Include="field_helpers.h" />
     <ClInclude Include="henry_draper.h" />
+    <ClInclude Include="hipparcos.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

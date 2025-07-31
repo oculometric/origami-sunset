@@ -23,5 +23,11 @@
     <ClInclude Include="henry_draper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hipparcos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="field_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

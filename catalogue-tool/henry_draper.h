@@ -1,7 +1,13 @@
+#pragma once
+
 #include <fstream>
 #include <string>
 #include <vector>
+#include <iostream>
 
+#include "field_helpers.h"
+
+#pragma pack(push)
 #pragma pack(1)
 struct CTHDEntry
 {
@@ -21,23 +27,33 @@ struct CTHDEntry
 	uint16_t variability_flag;
 	uint16_t multiplicity_flag;
 };
+#pragma pack(pop)
 
 inline std::vector<CTHDEntry> readTDat_HD(std::string path)
 {
-	std::ifstream file(path, std::ios::binary);
+	std::cout << "reading HD catalog... " << std::endl;
+	
+	std::ifstream file(path);
 	if (!file.is_open())
-		return {};
+	{
+		std::cout << "failed!" << std::endl;
+		return { };
+	}
 
 	std::string line;
 	line.resize(512, '\0');
-	while (true)
-	{
-		file.getline((char*)line.c_str(), 512, '\n');
-		if (strcmp(line.c_str(), "<DATA>") == 0)
-			break;
-	}
+	size_t total_rows = 0;
+	std::string last_modified;
+	if (!findTDatDataStart(file, line, total_rows, last_modified))
+		return { };
+
+	std::cout << "    detected " << total_rows << " total rows" << std::endl;
+	std::cout << "    last modified " << last_modified << std::endl;
 	
+	std::cout << "    reading entries..." << std::endl;
+
 	std::vector<CTHDEntry> entries;
+	size_t complete_percent = 0;
 	while (true)
 	{
 		file.getline((char*)line.c_str(), 512, '\n');
@@ -47,39 +63,32 @@ inline std::vector<CTHDEntry> readTDat_HD(std::string path)
 		CTHDEntry entry;
 		size_t field_start = 0;
 		size_t field_end = line.find('|', field_start);
-		entry.bii = std::stof(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.classi = std::stoi(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.dec = std::stod(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.dircos1 = std::stod(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.dircos2 = std::stod(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.dircos3 = std::stod(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.hd_number = std::stoi(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.lii = std::stof(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.multiplicity_flag = std::stoi(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		memcpy(entry.name, line.substr(field_start, field_end - field_start).c_str(), 20);
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.pgmag = std::stof(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.ra = std::stof(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		memcpy(entry.spectral_type, line.substr(field_start, field_end - field_start).c_str(), 4);
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.variability_flag = std::stoi(line.substr(field_start, field_start - field_end));
-		field_start = field_end + 1; field_end = line.find('|', field_start);
-		entry.vmag = std::stof(line.substr(field_start, field_start - field_end));
+		FIELD_FLOAT4(entry.bii);
+		FIELD_INT(entry.classi);
+		FIELD_FLOAT8(entry.dec);
+		FIELD_FLOAT8(entry.dircos1);
+		FIELD_FLOAT8(entry.dircos2);
+		FIELD_FLOAT8(entry.dircos3);
+		FIELD_LONG(entry.hd_number);
+		FIELD_FLOAT4(entry.lii);
+		FIELD_INT(entry.multiplicity_flag);
+		FIELD_STR(entry.name);
+		FIELD_FLOAT4(entry.pgmag);
+		FIELD_FLOAT8(entry.ra);
+		FIELD_STR(entry.spectral_type);
+		FIELD_INT(entry.variability_flag);
+		FIELD_FLOAT4(entry.vmag);
 
 		entries.push_back(entry);
+		size_t tmp = complete_percent;
+		complete_percent = entries.size() * 100 / total_rows;
+		if (complete_percent > tmp)
+			std::cout << "\r    " << complete_percent << "% complete";
 	}
+	std::cout << std::endl;
 
 	file.close();
+
+	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
