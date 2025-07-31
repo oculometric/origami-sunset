@@ -127,6 +127,8 @@
     <ClInclude Include="field_helpers.h" />
     <ClInclude Include="henry_draper.h" />
     <ClInclude Include="hipparcos.h" />
+    <ClInclude Include="messier.h" />
+    <ClInclude Include="ngc2000.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

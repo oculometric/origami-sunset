@@ -5,6 +5,8 @@
 #include "../inc/constellation.h"
 #include "henry_draper.h"
 #include "hipparcos.h"
+#include "messier.h"
+#include "ngc2000.h"
 
 using namespace std;
 
@@ -18,6 +20,8 @@ int main()
 
 	auto hd_data = readTDat_HD("../catalog/heasarc_hd.tdat");
 	auto hip_data = readTDat_HIP("../catalog/heasarc_hipparcos.tdat");
+	auto mes_data = readTDat_Mes("../catalog/heasarc_messier.tdat");
+	auto ngc_data = readTDat_NGC("../catalog/heasarc_ngc2000.tdat");
 
 	generated_file.close();
 

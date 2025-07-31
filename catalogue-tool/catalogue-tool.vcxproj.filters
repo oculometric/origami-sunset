@@ -29,5 +29,11 @@
     <ClInclude Include="field_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="messier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ngc2000.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
