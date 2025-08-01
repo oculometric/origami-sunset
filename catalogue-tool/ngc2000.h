@@ -11,7 +11,7 @@
 #pragma pack(1)
 struct CTNGCEntry
 {
-	char name[8] = { 0 };
+	char name[9] = { 0 };
 	char source_type[3] = { 0 };
 	double ra = 0;
 	double dec = 0;

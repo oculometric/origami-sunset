@@ -11,7 +11,7 @@
 #pragma pack(1)
 struct CTMesEntry
 {
-	char alt_name[10] = { 0 };
+	char alt_name[11] = { 0 };
 	double bii = 0;
 	uint16_t classi = 0;
 	char constell[4] = { 0 };

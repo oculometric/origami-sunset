@@ -11,7 +11,7 @@
 #pragma pack(1)
 struct CTHIPEntry
 {
-	char name[10] = { 0 };
+	char name[11] = { 0 };
 	double ra = 0;
 	double dec = 0;
 	double lii = 0;

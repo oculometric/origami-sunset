@@ -6,7 +6,15 @@
 #include <fstream>
 #include <iostream>
 
-inline std::map<std::string, std::vector<std::pair<float, float>>> readBounds(std::string path)
+struct CTConstellation
+{
+    std::string name;
+    std::string identifier;
+    std::pair<double, double> center;
+    std::vector<std::pair<double, double>> boundary;
+};
+
+inline std::map<std::string, std::vector<std::pair<double, double>>> readBounds(std::string path)
 {
 	std::cout << "reading boundary database... " << std::endl;
 
@@ -17,7 +25,7 @@ inline std::map<std::string, std::vector<std::pair<float, float>>> readBounds(st
 		return { };
 	}
 
-	std::map<std::string, std::vector<std::pair<float, float>>> ret;
+	std::map<std::string, std::vector<std::pair<double, double>>> ret;
 
 	std::string line;
 	line.resize(64, '\0');
@@ -25,8 +33,8 @@ inline std::map<std::string, std::vector<std::pair<float, float>>> readBounds(st
 	{
 		size_t first_space = line.find(' ', 2);
 		size_t second_space = line.find(' ', first_space + 2);
-		float ra = stof(line.substr(0, first_space));
-		float dec = stof(line.substr(first_space, second_space - first_space));
+        double ra = stod(line.substr(0, first_space));
+        double dec = stod(line.substr(first_space, second_space - first_space));
 		std::string id = line.substr(second_space + 1, 4);
 		if (id[id.size() - 1] == '\0') id.pop_back();
 
@@ -37,7 +45,7 @@ inline std::map<std::string, std::vector<std::pair<float, float>>> readBounds(st
 	return ret;
 }
 
-inline std::map<std::string, std::pair<float, float>> readCenters(std::string path)
+inline std::map<std::string, std::pair<double, double>> readCenters(std::string path)
 {
 	std::cout << "reading center database... " << std::endl;
 
@@ -48,7 +56,7 @@ inline std::map<std::string, std::pair<float, float>> readCenters(std::string pa
 		return { };
 	}
 
-	std::map<std::string, std::pair<float, float>> ret;
+	std::map<std::string, std::pair<double, double>> ret;
 
 	std::string line;
 	line.resize(64, '\0');
@@ -56,8 +64,8 @@ inline std::map<std::string, std::pair<float, float>> readCenters(std::string pa
 	{
 		size_t first_space = line.find(' ', 2);
 		size_t second_space = line.find(' ', first_space + 2);
-		float ra = stof(line.substr(0, first_space));
-		float dec = stof(line.substr(first_space, second_space - first_space));
+        double ra = stod(line.substr(0, first_space));
+        double dec = stod(line.substr(first_space, second_space - first_space));
 		second_space = line.find(' ', second_space + 10);
 		std::string id = line.substr(second_space + 1, 4);
 		if (id[id.size() - 1] == '\0') id.pop_back();
@@ -87,28 +95,55 @@ static inline uint8_t getQuarter(double g)
     }
 }
 
-inline bool testStarInConstellation(std::pair<double, double> star, std::pair<double, double> center, const std::vector<std::pair<float, float>>& boundary)
+inline std::vector<CTConstellation> loadConstellations(std::string base_path)
 {
-    std::pair<double, double> alt_star = star;
+    auto boundary_data = readBounds(base_path + "/bound_in_20.txt");
+    auto center_data = readCenters(base_path + "/centers_20.txt");
 
+    // TODO: compute bounding box to accelerate containment checks
+
+    if (boundary_data.empty() || center_data.empty())
+        return { };
+
+    center_data.erase("SER");
+
+    std::vector<CTConstellation> constels;
+    for (const auto& pair : boundary_data)
+    {
+        CTConstellation constel;
+        constel.identifier = pair.first;
+        constel.boundary = boundary_data[pair.first];
+        for (auto& p : constel.boundary)
+            p.first = p.first * (360.0f / 24.0f);
+        constel.center = center_data[pair.first];
+        constel.center.first = constel.center.first * (360.0f / 24.0f);
+
+        constels.push_back(constel);
+    }
+
+    return constels;
+}
+
+inline bool checkContains(std::pair<double, double> point, const CTConstellation& constellation)
+{
     // based on this https://stackoverflow.com/a/3838357/7332101
-    std::pair<double, double> i2 = { std::min(alt_star.first, center.first), std::max(alt_star.first, center.first) };
-    double a2 = (alt_star.second - center.second) / (alt_star.first - center.first);
-    double b2 = alt_star.second - (a2 * alt_star.first);
+    std::pair<double, double> i2 = { std::min(point.first, (double)constellation.center.first), std::max(point.first, (double)constellation.center.first)};
+    double a2 = (point.second - (double)constellation.center.second) / (point.first - (double)constellation.center.first);
+    double b2 = point.second - (a2 * point.first);
 
     size_t num_intersections = 0;
     std::vector<std::pair<double, double>> intersections;
     std::vector<uint8_t> intersection_gradients;
-    for (int i = 0; i < boundary.size(); i++)
+    for (int i = 0; i < constellation.boundary.size(); i++)
     {
-        auto p1 = boundary[i];
-        auto p2 = boundary[(i + 1) % boundary.size()];
-        if (abs(p1.first - p2.first) > 12.0f)
+        auto p1 = constellation.boundary[i];
+        auto p2 = constellation.boundary[(i + 1) % constellation.boundary.size()];
+        if (abs(p1.first - p2.first) > 180.0f)
         {
             if (p2.first > p1.first)
-                p2.first -= 24.0f;
+                p2.first -= 360.0f;
             else
-                p1.first -= 24.0f;
+                p1.first -= 360.0f;
         }
 
         std::pair<double, double> i1 = { std::min(p1.first, p2.first), std::max(p1.first, p2.first) };
