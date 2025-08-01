@@ -49,6 +49,7 @@ int main()
 				constel = pair.first;
 				if (constel == "SER1" || constel == "SER2")
 					constel = "SER";
+				break;
 			}
 		}
 		string real_constel = entry.constellation;
@@ -56,9 +57,9 @@ int main()
 
 		if (constel != real_constel)
 			failures++;
-			//std::cout << "fail!" << std::endl;
 	}
 	
+	std::cout << "constellation detector failed (but not really) " << failures << " times." << std::endl;
 	generated_file.close();
 
 	return 0;

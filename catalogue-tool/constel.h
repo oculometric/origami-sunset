@@ -69,68 +69,87 @@ inline std::map<std::string, std::pair<float, float>> readCenters(std::string pa
 	return ret;
 }
 
-inline bool testStarInConstellation(std::pair<float, float> star, std::pair<float, float> center, const std::vector<std::pair<float, float>>& boundary)
+static inline uint8_t getQuarter(double g)
 {
-	std::pair<float, float> alt_star = star;
-	if (abs(alt_star.first - center.first) > 12.0f)
-	{
-		if (alt_star.first > center.first)
-			alt_star.first -= 24.0f;
-		else
-			center.first -= 24.0f;
-	}
-	//if (abs((alt_star.first - 24.0f) - center.first) < abs(alt_star.first - center.first))
-	//	alt_star.first -= 24.0f;
+    if (abs(g) > 0.5f)
+    {
+        if (g > 0.0f)
+            return 0;
+        else
+            return 1;
+    }
+    else
+    {
+        if (g > 0.0f)
+            return 2;
+        else
+            return 3;
+    }
+}
 
-	// based on this https://stackoverflow.com/a/3838357/7332101
-	std::pair<float, float> i2 = { std::min(alt_star.first, center.first), std::max(alt_star.first, center.first) };
-	float a2 = (alt_star.second - center.second) / (alt_star.first - center.first);
-	float b2 = alt_star.second - (a2 * alt_star.first);
-	//std::pair<float, float> dif = { alt_star.first - center.first, alt_star.second - center.second };
-	//float x3y4 = (alt_star.first * center.second) - (alt_star.second * center.first);
-	//float l_dir = sqrt((dir.first * dir.first) + (dir.second * dir.second));
-	//dir.first /= l_dir; dir.second /= l_dir;
-	// 
+inline bool testStarInConstellation(std::pair<double, double> star, std::pair<double, double> center, const std::vector<std::pair<float, float>>& boundary)
+{
+    std::pair<double, double> alt_star = star;
 
-	size_t num_intersections = 0;
-	for (int i = 0; i < boundary.size(); i++)
-	{
-		auto p1 = boundary[i];
-		auto p2 = boundary[(i + 1) % boundary.size()];
-		if (abs(p1.first - p2.first) > 12.0f)
-		{
-			if (p2.first > p1.first)
-				p2.first -= 24.0f;
-			else
-				p1.first -= 24.0f;
-		}
+    // based on this https://stackoverflow.com/a/3838357/7332101
+    std::pair<double, double> i2 = { std::min(alt_star.first, center.first), std::max(alt_star.first, center.first) };
+    double a2 = (alt_star.second - center.second) / (alt_star.first - center.first);
+    double b2 = alt_star.second - (a2 * alt_star.first);
 
-		std::pair<float, float> i1 = { std::min(p1.first, p2.first), std::max(p1.first, p2.first) };
-		std::pair<float, float> ia = { std::max(i1.first, i2.first), std::min(i1.second, i2.second) };
+    size_t num_intersections = 0;
+    std::vector<std::pair<double, double>> intersections;
+    std::vector<uint8_t> intersection_gradients;
+    for (int i = 0; i < boundary.size(); i++)
+    {
+        auto p1 = boundary[i];
+        auto p2 = boundary[(i + 1) % boundary.size()];
+        if (abs(p1.first - p2.first) > 12.0f)
+        {
+            if (p2.first > p1.first)
+                p2.first -= 24.0f;
+            else
+                p1.first -= 24.0f;
+        }
 
-		if (i1.second < i2.first)
-			continue;
+        std::pair<double, double> i1 = { std::min(p1.first, p2.first), std::max(p1.first, p2.first) };
+        std::pair<double, double> ia = { std::max(i1.first, i2.first), std::min(i1.second, i2.second) };
 
-		float a1 = (p1.second - p2.second) / (p1.first - p2.first);
-		float b1 = p1.second - (a1 * p1.first);
+        if (i1.second < i2.first)
+            continue;
 
-		if (a1 == a2)
-			continue;
+        double a1 = (p1.second - p2.second) / (p1.first - p2.first);
+        double b1 = p1.second - (a1 * p1.first);
 
-		float xa = (b2 - b1) / (a1 - a2);
+        if (a1 == a2)
+            continue;
 
-		if ((xa < ia.first) || xa > ia.second)
-			continue;
+        double xa = (b2 - b1) / (a1 - a2);
 
-		num_intersections++;
+        if ((xa < ia.first) || xa > ia.second)
+            continue;
 
-		/*float denom = ((p1.first - p2.first) * dif.second)
-					- ((p1.second - p2.second) * dif.first);
-		if (denom == 0.0f) continue;
-		float x1y2 = (p1.first * p2.second) - (p1.second * p2.first);
-		float ix = (x1y2 * dif.first) - ((p1.first - p2.first) * x3y4);
-		float iy = */
-	}
-	// TODO: here
+        double ya = ((a1 * xa) + b1);
+
+        bool duplicate_intersection = false;
+        for (int j = 0; j < intersections.size(); j++)
+        {
+            auto p = intersections[j];
+            uint8_t g = intersection_gradients[j];
+            if (abs(p.first - xa) < 0.0001f
+                && abs(p.second - ya) < 0.0001f
+                && g == getQuarter(a1))
+            {
+                duplicate_intersection = true;
+                break;
+            }
+        }
+        if (!duplicate_intersection)
+        {
+            num_intersections++;
+            intersections.push_back({ xa, ya });
+            intersection_gradients.push_back(getQuarter(a1));
+        }
+    }
+
 	return (num_intersections % 2) == 0;
 }

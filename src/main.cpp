@@ -74,85 +74,22 @@ void loop()
 
     ORIScreen::clear(0b0000000000100010);
 
-
-    for (int i = 0; i < boundary_data["AND"].size(); i++)
-    {
-        auto p1 = boundary_data["AND"][i];
-        auto p2 = boundary_data["AND"][(i + 1) % boundary_data["AND"].size()];
-
-        ORIScreen::drawLine((p1.first / 24.0f) * ORIScreen::getWidth(),
-            ((p1.second / 180.0f) + 0.5f) * ORIScreen::getHeight(),
-            (p2.first / 24.0f) * ORIScreen::getWidth(),
-            ((p2.second / 180.0f) + 0.5f) * ORIScreen::getHeight(), RED);
-    }
-    ORIScreen::setPixel((center_data["AND"].first / 24.0f) * ORIScreen::getWidth(),
-                        ((center_data["AND"].second / 180.0f) + 0.5f) * ORIScreen::getHeight(), RED);
-
-    ORIScreen::setPixel((ngc_data[0].ra / 360.0f) * ORIScreen::getWidth(),
-        ((ngc_data[0].dec / 180.0f) + 0.5f) * ORIScreen::getHeight(), BLUE);
-
-    {
-        std::pair<float, float> center = center_data["AND"];
-        std::vector<std::pair<float, float>> boundary = boundary_data["AND"];
-        std::pair<float, float> alt_star = { ngc_data[0].ra * (24.0f / 360.0f), ngc_data[0].dec };
-
-        // based on this https://stackoverflow.com/a/3838357/7332101
-        std::pair<float, float> i2 = { std::min(alt_star.first, center.first), std::max(alt_star.first, center.first) };
-        float a2 = (alt_star.second - center.second) / (alt_star.first - center.first);
-        float b2 = alt_star.second - (a2 * alt_star.first);
-
-        size_t num_intersections = 0;
-        for (int i = 0; i < boundary.size(); i++)
-        {
-            auto p1 = boundary[i];
-            auto p2 = boundary[(i + 1) % boundary.size()];
-            if (abs(p1.first - p2.first) > 12.0f)
-            {
-                if (p2.first > p1.first)
-                    p2.first -= 24.0f;
-                else
-                    p1.first -= 24.0f;
-            }
-
-            std::pair<float, float> i1 = { std::min(p1.first, p2.first), std::max(p1.first, p2.first) };
-            std::pair<float, float> ia = { std::max(i1.first, i2.first), std::min(i1.second, i2.second) };
-
-            if (i1.second < i2.first)
-                continue;
-
-            float a1 = (p1.second - p2.second) / (p1.first - p2.first);
-            float b1 = p1.second - (a1 * p1.first);
-
-            if (a1 == a2)
-                continue;
-
-            float xa = (b2 - b1) / (a1 - a2);
-
-            if ((xa < ia.first) || xa > ia.second)
-                continue;
-
-            ORIScreen::setPixel((xa / 24.0f) * ORIScreen::getWidth(),
-                ((((a1 * xa) + b1) / 180.0f) + 0.5f) * ORIScreen::getHeight(), GREEN);
-
-            num_intersections++;
-        }
-    }
-//#if defined(OPENGL)
-//    auto s = std::chrono::high_resolution_clock::now();
-//#elif defined(ARDUINO)
-//    unsigned long s = micros();
-//#endif
-//    ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
-//    if (show_overlay) ORIConstellationViewer::drawOverlay();
-//#if defined(OPENGL)
-//    auto e = std::chrono::high_resolution_clock::now();
-//    std::chrono::duration<float> d = e - s;
-//    total_time += d.count();
-//#elif defined(ARDUINO)
-//    unsigned long e = micros();
-//    total_time += (float)(e-s) / 1000000.0f;
-//#endif
-//    total_its++;
+#if defined(OPENGL)
+    auto s = std::chrono::high_resolution_clock::now();
+#elif defined(ARDUINO)
+    unsigned long s = micros();
+#endif
+    ORIConstellationViewer::drawConstellations(camera_right, camera_up, camera_fov);
+    if (show_overlay) ORIConstellationViewer::drawOverlay();
+#if defined(OPENGL)
+    auto e = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> d = e - s;
+    total_time += d.count();
+#elif defined(ARDUINO)
+    unsigned long e = micros();
+    total_time += (float)(e-s) / 1000000.0f;
+#endif
+    total_its++;
 
     /*ORISerial::print("camera RA: ");
     ORISerial::print(camera_right);

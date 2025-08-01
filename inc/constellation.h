@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <vector>
 
+#pragma pack(push)
 #pragma pack(2)
 struct ORIStar
 {
@@ -71,6 +72,7 @@ struct ORIConstellation
         : name(_name), stars(_stars), edges(_edges)
         { }*/
 };
+#pragma pack(pop)
 
 class ORIConstellationViewer
 {
