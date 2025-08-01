@@ -11,21 +11,21 @@
 #pragma pack(1)
 struct CTHDEntry
 {
-	char name[20];
-	double ra;
-	double dec;
-	float bii;
-	float lii;
-	uint16_t classi;
-	char spectral_type[4];
-	float vmag;
-	float pgmag;
-	uint32_t hd_number;
-	double dircos1;
-	double dircos2;
-	double dircos3;
-	uint16_t variability_flag;
-	uint16_t multiplicity_flag;
+	char name[20] = { 0 };
+	double ra = 0;
+	double dec = 0;
+	float bii = 0;
+	float lii = 0;
+	uint16_t classi = 0;
+	char spectral_type[4] = { 0 };
+	float vmag = 0;
+	float pgmag = 0;
+	uint32_t hd_number = 0;
+	double dircos1 = 0;
+	double dircos2 = 0;
+	double dircos3 = 0;
+	uint16_t variability_flag = 0;
+	uint16_t multiplicity_flag = 0;
 };
 #pragma pack(pop)
 
