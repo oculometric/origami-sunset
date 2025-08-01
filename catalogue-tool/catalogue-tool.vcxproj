@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="catalogue-tool.cpp" />
+    <ClInclude Include="constel.h" />
     <ClInclude Include="field_helpers.h" />
     <ClInclude Include="henry_draper.h" />
     <ClInclude Include="hipparcos.h" />

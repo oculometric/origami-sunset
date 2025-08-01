@@ -65,6 +65,7 @@ struct ORIConstellation
 
     std::initializer_list<ORIStar> stars;
     std::initializer_list<uint16_t> edges;
+    std::initializer_list<std::pair<float, float>> boundary;
 
     /*inline ORIConstellation(const char* _name = nullptr, std::vector<ORIStar> _stars = { }, std::vector<uint16_t> _edges = { })
         : name(_name), stars(_stars), edges(_edges)
