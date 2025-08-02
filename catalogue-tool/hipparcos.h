@@ -221,3 +221,21 @@ inline std::vector<CTHIPEntry> readTDat_HIP(std::string path)
 	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
+
+inline std::vector<CTHIPEntry> loadHIP(std::string base_path)
+{
+	std::cout << "loading hipparcos catalog..." << std::endl;
+
+	std::vector<CTHIPEntry> data;
+	readCache(data, base_path + "/cache/hip.dat");
+	if (data.empty())
+	{
+		data = readTDat_HIP(base_path + "/heasarc_hipparcos.tdat");
+		writeCache(data, base_path + "/cache/hip.dat");
+		std::cout << "wrote cache file to " << base_path << "/cache/hip.dat" << std::endl;
+	}
+	else
+		std::cout << "cache found, reading that instead." << std::endl;
+
+	return data;
+}

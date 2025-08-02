@@ -87,3 +87,21 @@ inline std::vector<CTMesEntry> readTDat_Mes(std::string path)
 	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
+
+inline std::vector<CTMesEntry> loadMes(std::string base_path)
+{
+	std::cout << "loading messier catalog..." << std::endl;
+
+	std::vector<CTMesEntry> data;
+	readCache(data, base_path + "/cache/mes.dat");
+	if (data.empty())
+	{
+		data = readTDat_Mes(base_path + "/heasarc_messier.tdat");
+		writeCache(data, base_path + "/cache/mes.dat");
+		std::cout << "wrote cache file to " << base_path << "/cache/mes.dat" << std::endl;
+	}
+	else
+		std::cout << "cache found, reading that instead." << std::endl;
+
+	return data;
+}

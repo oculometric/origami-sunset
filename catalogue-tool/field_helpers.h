@@ -46,3 +46,49 @@ inline bool findTDatDataStart(std::ifstream& file, std::string& line, size_t& to
 
 	return true;
 }
+
+static inline std::string fixPath(std::string path)
+{
+	std::string str = path.substr(0, path.find_last_of('/'));
+#if defined(_WIN32)
+	for (int i = 0; i < str.size(); i++)
+	{
+		if (str[i] == '/')
+		{
+			str[i] = '\\';
+			str.insert(i, 1, '\\');
+			i++;
+		}
+	}
+#endif
+	return str;
+}
+
+template<typename T>
+inline void writeCache(const std::vector<T>& data, std::string path)
+{
+	system(("mkdir " + fixPath(path)).c_str());
+	std::ofstream file(path, std::ios::binary);
+	if (!file.is_open())
+		return;
+
+	file.write((const char*)(data.data()), sizeof(T) * data.size());
+
+	file.close();
+}
+
+template<typename T>
+inline void readCache(std::vector<T>& data, std::string path)
+{
+	std::ifstream file(path, std::ios::binary | std::ios::ate);
+	if (!file.is_open())
+		return;
+
+	size_t length = file.tellg();
+	file.seekg(std::ios::beg);
+	data.resize(length / sizeof(T));
+
+	file.read((char*)(data.data()), length);
+
+	file.close();
+}

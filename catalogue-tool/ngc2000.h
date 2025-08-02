@@ -89,3 +89,21 @@ inline std::vector<CTNGCEntry> readTDat_NGC(std::string path)
 	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
+
+inline std::vector<CTNGCEntry> loadNGC(std::string base_path)
+{
+	std::cout << "loading NGC2000 catalog..." << std::endl;
+
+	std::vector<CTNGCEntry> data;
+	readCache(data, base_path + "/cache/ngc.dat");
+	if (data.empty())
+	{
+		data = readTDat_NGC(base_path + "/heasarc_ngc2000.tdat");
+		writeCache(data, base_path + "/cache/ngc.dat");
+		std::cout << "wrote cache file to " << base_path << "/cache/ngc.dat" << std::endl;
+	}
+	else
+		std::cout << "cache found, reading that instead." << std::endl;
+
+	return data;
+}

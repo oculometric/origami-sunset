@@ -92,3 +92,21 @@ inline std::vector<CTHDEntry> readTDat_HD(std::string path)
 	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
+
+inline std::vector<CTHDEntry> loadHD(std::string base_path)
+{
+	std::cout << "loading HD catalog..." << std::endl;
+
+	std::vector<CTHDEntry> data;
+	readCache(data, base_path + "/cache/hd.dat");
+	if (data.empty())
+	{
+		data = readTDat_HD(base_path + "/heasarc_hd.tdat");
+		writeCache(data, base_path + "/cache/hd.dat");
+		std::cout << "wrote cache file to " << base_path << "/cache/hd.dat" << std::endl;
+	}
+	else
+		std::cout << "cache found, reading that instead." << std::endl;
+
+	return data;
+}
