@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "field_helpers.h"
+#include "star.h"
 
 #pragma pack(push)
 #pragma pack(1)
@@ -90,7 +91,7 @@ inline std::vector<CTNGCEntry> readTDat_NGC(std::string path)
 	return entries;
 }
 
-inline std::vector<CTNGCEntry> loadNGC(std::string base_path)
+inline std::vector<CTCelestial> loadNGC(std::string base_path)
 {
 	std::cout << "loading NGC2000 catalog..." << std::endl;
 
@@ -105,5 +106,29 @@ inline std::vector<CTNGCEntry> loadNGC(std::string base_path)
 	else
 		std::cout << "cache found, reading that instead." << std::endl;
 
-	return data;
+	std::cout << "generating standardised data..." << std::endl;
+	std::vector<CTCelestial> standardised_data;
+	for (const auto& datum : data)
+	{
+		CTCelestial c;
+		std::string name = datum.name;
+		c.names.push_back(name);
+		if (name.substr(0, 2) == "IC")
+			c.ic_number = stoi(name.substr(3));
+		else if (name.substr(0, 3) == "NGC")
+			c.ngc2000_number = stoi(name.substr(4));
+		c.ra_dec = { datum.ra, datum.dec };
+		c.gal_lat_long = { datum.bii, datum.lii };
+		c.classification = datum.classi;
+		c.visual_magnitude = datum.app_mag;
+		memcpy(c.constellation, datum.constellation, 3);
+		for (int i = 0; i < 3; i++) c.constellation[i] = toupper(c.constellation[i]);
+		c.descriptions.push_back(datum.description);
+		// TODO: object type based on datum.source_type
+		//c.object_type = STAR;
+		standardised_data.push_back(c);
+	}
+	std::cout << "done." << std::endl;
+
+	return standardised_data;
 }

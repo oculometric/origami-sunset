@@ -130,6 +130,7 @@
     <ClInclude Include="hipparcos.h" />
     <ClInclude Include="messier.h" />
     <ClInclude Include="ngc2000.h" />
+    <ClInclude Include="star.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

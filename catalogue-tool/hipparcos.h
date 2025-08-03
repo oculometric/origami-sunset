@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "field_helpers.h"
+#include "star.h"
 
 #pragma pack(push)
 #pragma pack(1)
@@ -222,7 +223,7 @@ inline std::vector<CTHIPEntry> readTDat_HIP(std::string path)
 	return entries;
 }
 
-inline std::vector<CTHIPEntry> loadHIP(std::string base_path)
+inline std::vector<CTCelestial> loadHIP(std::string base_path)
 {
 	std::cout << "loading hipparcos catalog..." << std::endl;
 
@@ -237,5 +238,27 @@ inline std::vector<CTHIPEntry> loadHIP(std::string base_path)
 	else
 		std::cout << "cache found, reading that instead." << std::endl;
 
-	return data;
+	std::cout << "generating standardised data..." << std::endl;
+	std::vector<CTCelestial> standardised_data;
+	for (const auto& datum : data)
+	{
+		CTCelestial c;
+		std::string corrected_name = datum.name;
+		c.names.push_back(corrected_name);
+		c.henry_draper_number = datum.hd_id;
+		c.hipparcos_number = datum.hip_number;
+		c.ra_dec = { datum.ra, datum.dec };
+		c.gal_lat_long = { datum.bii, datum.lii };
+		c.classification = datum.classi;
+		c.spectral_type = datum.spect_type;
+		// TODO: which magnitudes?
+		// TODO: multiplicity?
+		c.is_variable = datum.var_flag;
+		c.proper_motion = { datum.pm_ra, datum.pm_dec };
+		c.object_type = STAR;
+		standardised_data.push_back(c);
+	}
+	std::cout << "done." << std::endl;
+
+	return standardised_data;
 }

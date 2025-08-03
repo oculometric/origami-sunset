@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "field_helpers.h"
+#include "star.h"
 
 #pragma pack(push)
 #pragma pack(1)
@@ -88,7 +89,7 @@ inline std::vector<CTMesEntry> readTDat_Mes(std::string path)
 	return entries;
 }
 
-inline std::vector<CTMesEntry> loadMes(std::string base_path)
+inline std::vector<CTCelestial> loadMes(std::string base_path)
 {
 	std::cout << "loading messier catalog..." << std::endl;
 
@@ -103,5 +104,31 @@ inline std::vector<CTMesEntry> loadMes(std::string base_path)
 	else
 		std::cout << "cache found, reading that instead." << std::endl;
 
-	return data;
+	std::cout << "generating standardised data..." << std::endl;
+	std::vector<CTCelestial> standardised_data;
+	for (const auto& datum : data)
+	{
+		CTCelestial c;
+		std::string mes_name = datum.name;
+		c.names.push_back(mes_name);
+		c.messier_number = stoi(mes_name.substr(2));
+		std::string alt_name = datum.alt_name;
+		c.names.push_back(alt_name);
+		if (alt_name.substr(0, 2) == "IC")
+			c.ic_number = stoi(alt_name.substr(2));
+		else if (alt_name.substr(0, 3) == "NGC")
+			c.ngc2000_number = stoi(alt_name.substr(4));
+		c.ra_dec = { datum.ra, datum.dec };
+		c.gal_lat_long = { datum.bii, datum.lii };
+		c.classification = datum.classi;
+		c.visual_magnitude = datum.vmag;
+		c.descriptions.push_back(datum.notes);
+		memcpy(c.constellation, datum.constell, 3);
+		// TODO: object type based on datum.object_type
+		//c.object_type = STAR;
+		standardised_data.push_back(c);
+	}
+	std::cout << "done." << std::endl;
+
+	return standardised_data;
 }

@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "field_helpers.h"
+#include "star.h"
 
 #pragma pack(push)
 #pragma pack(1)
@@ -93,7 +94,7 @@ inline std::vector<CTHDEntry> readTDat_HD(std::string path)
 	return entries;
 }
 
-inline std::vector<CTHDEntry> loadHD(std::string base_path)
+inline std::vector<CTCelestial> loadHD(std::string base_path)
 {
 	std::cout << "loading HD catalog..." << std::endl;
 
@@ -108,5 +109,27 @@ inline std::vector<CTHDEntry> loadHD(std::string base_path)
 	else
 		std::cout << "cache found, reading that instead." << std::endl;
 
-	return data;
+	std::cout << "generating standardised data..." << std::endl;
+	std::vector<CTCelestial> standardised_data;
+	for (const auto& datum : data)
+	{
+		CTCelestial c;
+		std::string corrected_name = datum.name;
+		corrected_name.insert(2, 1, ' ');
+		c.names.push_back(corrected_name);
+		c.henry_draper_number = datum.hd_number;
+		c.ra_dec = { datum.ra, datum.dec };
+		c.gal_lat_long = { datum.bii, datum.lii };
+		c.classification = datum.classi;
+		c.spectral_type = datum.spectral_type;
+		c.visual_magnitude = datum.pgmag; // FIXME: should this be vmag??
+		c.is_multiple = datum.multiplicity_flag;
+		c.is_variable = datum.variability_flag;
+		c.object_type = STAR;
+
+		standardised_data.push_back(c);
+	}
+	std::cout << "done." << std::endl;
+
+	return standardised_data;
 }

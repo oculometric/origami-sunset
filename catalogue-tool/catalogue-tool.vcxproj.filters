@@ -38,5 +38,8 @@
     <ClInclude Include="constel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="star.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

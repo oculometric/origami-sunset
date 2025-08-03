@@ -24,33 +24,12 @@ int main()
 	auto mes_data = loadMes("../catalog");
 	auto ngc_data = loadNGC("../catalog");
 
+	// TODO: bayer
+	// TODO: flamsteed
+	// TODO: merge
+
 	auto constellations = loadConstellations("../catalog");
 
-	size_t failures = 0;
-	for (const CTNGCEntry& entry : ngc_data)
-	{
-		string constel_name = "NON";
-		for (const auto& constel : constellations)
-		{
-			if (checkContains({ entry.ra, entry.dec }, constel))
-			{
-				constel_name = constel.identifier;
-				break;
-			}
-		}
-		string real_constel = entry.constellation;
-		for (auto& c : real_constel) c = toupper(c);
-
-		if (constel_name != real_constel)
-		{
-			cout << "constellation check failed for star " << entry.name << endl;
-			failures++;
-		}
-		//else
-			//cout << "constellation found for star " << entry.name << "(" << constel_name << ")" << endl;
-	}
-	
-	std::cout << "constellation detector failed (but not really) " << failures << " times." << std::endl;
 	generated_file.close();
 
 	return 0;

@@ -14,6 +14,11 @@ struct CTConstellation
     std::vector<std::pair<double, double>> boundary;
 };
 
+inline double hoursToDegrees(double hours)
+{
+    return hours * (360.0f / 24.0f);
+}
+
 inline std::map<std::string, std::vector<std::pair<double, double>>> readBounds(std::string path)
 {
 	std::cout << "reading boundary database... " << std::endl;
@@ -114,9 +119,9 @@ inline std::vector<CTConstellation> loadConstellations(std::string base_path)
         constel.identifier = pair.first;
         constel.boundary = boundary_data[pair.first];
         for (auto& p : constel.boundary)
-            p.first = p.first * (360.0f / 24.0f);
+            p.first = hoursToDegrees(p.first);
         constel.center = center_data[pair.first];
-        constel.center.first = constel.center.first * (360.0f / 24.0f);
+        constel.center.first = hoursToDegrees(constel.center.first);
 
         constels.push_back(constel);
     }
@@ -127,8 +132,8 @@ inline std::vector<CTConstellation> loadConstellations(std::string base_path)
 inline bool checkContains(std::pair<double, double> point, const CTConstellation& constellation)
 {
     // based on this https://stackoverflow.com/a/3838357/7332101
-    std::pair<double, double> i2 = { std::min(point.first, (double)constellation.center.first), std::max(point.first, (double)constellation.center.first)};
-    double a2 = (point.second - (double)constellation.center.second) / (point.first - (double)constellation.center.first);
+    std::pair<double, double> i2 = { std::min(point.first, constellation.center.first), std::max(point.first, constellation.center.first)};
+    double a2 = (point.second - constellation.center.second) / (point.first - constellation.center.first);
     double b2 = point.second - (a2 * point.first);
 
     size_t num_intersections = 0;
