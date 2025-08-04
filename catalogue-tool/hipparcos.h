@@ -251,6 +251,7 @@ inline std::vector<CTCelestial> loadHIP(std::string base_path)
 		c.gal_lat_long = { datum.bii, datum.lii };
 		c.classification = datum.classi;
 		c.spectral_type = datum.spect_type;
+		c.visual_magnitude = datum.vmag;
 		// TODO: which magnitudes?
 		// TODO: multiplicity?
 		c.is_variable = datum.var_flag;
@@ -262,3 +263,15 @@ inline std::vector<CTCelestial> loadHIP(std::string base_path)
 
 	return standardised_data;
 }
+
+struct HIPComparator
+{
+	inline bool operator() (const CTCelestial& a, const CTCelestial& b)
+	{
+		if (a.henry_draper_number == 0)
+			return false;
+		if (b.henry_draper_number == 0)
+			return true;
+		return (a.henry_draper_number < b.henry_draper_number);
+	}
+};

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
 
 #include "../inc/constellation.h"
 #include "henry_draper.h"
@@ -13,6 +14,96 @@ using namespace std;
 
 #pragma pack(1)
 
+std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const std::vector<CTCelestial>& hip)
+{
+	std::vector<CTCelestial> merged;
+
+	std::vector<bool> consumed;
+	std::vector<CTCelestial> hip_sorted;
+	hip_sorted.insert(hip_sorted.begin(), hip.begin(), hip.end());
+	sort(hip_sorted.begin(), hip_sorted.end(), HIPComparator());
+	std::vector<CTCelestial> hd_sorted;
+	hd_sorted.insert(hd_sorted.begin(), hd.begin(), hd.end());
+	sort(hd_sorted.begin(), hd_sorted.end(), HIPComparator());
+
+	size_t remaining = hip.size();
+	consumed.insert(consumed.begin(), remaining, false);
+
+	size_t classi_mismatches = 0;
+	size_t spect_mismatches = 0;
+
+	size_t complete_percent = 0;
+	size_t hd_complete = 0;
+	size_t hip_complete = 0;
+	size_t hip_search_start = 0;
+	std::cout << "    " << "0% complete";
+	for (CTCelestial hd_s : hd_sorted)
+	{
+		if (remaining != 0)
+		{
+			for (int i = hip_search_start; i < hip_sorted.size(); i++)
+			{
+				if (consumed[i])
+					continue;
+				if (hip_sorted[i].henry_draper_number > hd_s.henry_draper_number)
+					break;
+				if (hip_sorted[i].henry_draper_number == hd_s.henry_draper_number)
+				{
+					hd_s.names.insert(hd_s.names.end(), hip_sorted[i].names.begin(), hip_sorted[i].names.end());
+					hd_s.ra_dec = hip_sorted[i].ra_dec;
+					hd_s.gal_lat_long = hip_sorted[i].gal_lat_long;
+					hd_s.hipparcos_number = hip_sorted[i].hipparcos_number;
+					if (hd_s.classification != hip_sorted[i].classification)
+						classi_mismatches++;
+					if (hd_s.spectral_type != hip_sorted[i].spectral_type)
+						spect_mismatches++;
+					if (hip_sorted[i].classification != 9999)
+					{
+						hd_s.classification = hip_sorted[i].classification;
+						hd_s.spectral_type = hip_sorted[i].spectral_type;
+					}
+					// FIXME: magnitudes
+					hd_s.proper_motion = hip_sorted[i].proper_motion;
+					consumed[i] = true;
+					hip_complete++;
+					remaining--;
+					if (hip_search_start = i)
+						hip_search_start = i + 1;
+					break;
+				}
+			}
+		}
+		hd_complete++;
+		merged.push_back(hd_s);
+
+		size_t tmp = complete_percent;
+		complete_percent = (hd_complete + hip_complete) * 100 / (hd.size() + hip.size());
+		if (complete_percent > tmp)
+			std::cout << "\r    " << complete_percent << "% complete";
+	}
+	if (remaining > 0)
+	{
+		for (int i = 0; i < hip_sorted.size(); i++)
+		{
+			if (remaining == 0)
+				break;
+			if (consumed[i])
+				continue;
+			merged.push_back(hip_sorted[i]);
+			consumed[i] = true;
+			hip_complete++;
+			remaining--;
+
+			size_t tmp = complete_percent;
+			complete_percent = (hd_complete + hip_complete) * 100 / (hd.size() + hip.size());
+			if (complete_percent > tmp)
+				std::cout << "\r    " << complete_percent << "% complete";
+		}
+	}
+
+	return merged;
+}
+
 int main()
 {
 	ofstream generated_file("../inc/constellation_data.generated.h");
@@ -23,7 +114,8 @@ int main()
 	auto hip_data = loadHIP("../catalog");
 	auto mes_data = loadMes("../catalog");
 	auto ngc_data = loadNGC("../catalog");
-
+	
+	auto hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
 	// TODO: bayer
 	// TODO: flamsteed
 	// TODO: merge

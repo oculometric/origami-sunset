@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<title>CLASS - HEASARC Object Classifications</title>
+</head>
+<body bgcolor="#cceeff">
+<div><div><div><div><div><div>
+
+<table border="0" cellpadding="10" width="100%" align="center">
+  <tbody><tr>
+    <td align="left"><a style="visibility: hidden" href="https://heasarc.gsfc.nasa.gov/docs/archive.html">HEASARC<br>Archive</a></td>
+    <td align="center"><h1>CLASS - HEASARC Object Classifications</h1></td>
+    <td align="right"><a href="https://heasarc.gsfc.nasa.gov/docs/archive.html">HEASARC<br>Archive</a></td>
+  </tr>
+</tbody></table>
+<hr>
+<h2><a name="overview">Overview</a></h2>
+This section describes the "class" parameter, which is included in many
+tables in the HEASARC database. It can be used to select objects according to
+their classifications.
+<p>
+
+Each object is assigned a four digit numeric code to represent its object
+classification. The first digit describes the global classification (e.g., AGN
+or star). The following digits assign further classifications or properties
+such as spectral type, or type of AGN. Each sub-class is chosen to contain a
+unique set of properties. For example, all normal (non-degenerate) stars have
+the first digit set to 2. The second digit for stars indicates the spectral
+type (O, B, etc.), the third digit the numerical sub-type, and the last digit
+the luminosity class; thus, a G5V star will have the class code of 2555. All
+stars later (cooler) than F0 have a "class" number between 2400 and 2999.
+As another example, all AGN have class codes that lie between 7000 and 7999;
+a search by class for AGN would thus be made by doing a search of the class
+parameter with the range set from 7000 to 7999.
+</p><p>
+
+It should be emphasized that the class assignments of the same source found
+in different databases may not always be identical, and, for any given
+database, the class codes may not always be present, correct, or complete:
+see the database help for the particular database in question to determine
+how the class codes were constructed. ALWAYS USE THE CLASS CODES WITH THESE
+CAVEATS IN MIND.
+
+</p><hr><h3><a name="object_classes">Object Classes</a></h3>
+<pre>1000 - X-ray binary
+1100 - HMXRB                  10 - X-ray pulsar      1 - flares
+1200 - HMXRB supergiant       20 - burster           2 - jets
+1300 - HMXRB Be star          30 - black hole        3 - eclipsing
+1400 - LMXRB                  40 - QPO               4 - ultra-soft transient
+1500 - LMXRB Globular cluster 50 - QPO &amp; black hole  5 - soft transient
+                              60 - QPO &amp; pulsar      6 - hard transient
+                              70 - QPO &amp; bursts      7 - eclipsing dipper
+                              80 - QPO,pulsar,bursts 8 - eclipsing ADC
+                              90 - pulsar &amp; bursts   9 - dipper
+
+1600 - CV                 10 - Classical Nova         1 - oscillations
+                          20 - Recurrent Nova         2 - coherent osc.
+                          30 - AM Her (polar)         3 - fast
+                          40 - Intermediate polar     4 - slow
+                          50 - Dwarf nova             5 - eclipsing
+                          60 - Dwarf nova U Gem type  6 -
+                          70 - Dwarf Nova Z Cam type  7 -
+                          80 - Dwarf Nova SU Uma type 8 -
+                          90 - Nova like              9 -
+
+1700 - Gamma ray          00 - source                 1 - pulsar
+                          10 - burst
+                          20 - burst, soft repeater
+
+1800 - Radio Pulsar
+1810 - X-ray pulsator
+1820 - Supersoft source
+1830 - Isolated neutron star
+1840 - Anomalous X-ray pulsar (AXP)
+1850 - Extrasolar planet
+1860 - Brown dwarf
+1870 - Protostar of Type 0
+1880 - Protostar of Type I
+1890 - Luminous Blue Variable (LBV)
+
+1900 - RS CVn star
+1910 - Algol star
+1920 - Beta Lyr star
+1930 - W UMa star
+1940 - Symbiotic star
+1950 - Zeta Aurigae star
+1960 - FK Comae star
+1970 - UV Ceti type
+1980 - T Tauri star       1 - (naked)
+                          2 - (post)
+1990 - Herbig Ae/Be star
+1991 - Be star
+
+2000 - Wolf Rayet    00 - unknown type   0 - spectral type unknown
+                     10 - WN             1 ............... 1
+                     20 - WC             2 ............... 2
+                     30 - WO             3 ............... 3
+                                         4 ............... 4
+                                         5 ............... 5
+                                         6 ............... 6
+                                         7 ............... 7
+                                         8 ............... 8
+                                         9 ............... 9-11
+
+                 00 - spectral type 0    0 .... luminosity class unknown
+2100 - O         10................ 1    1 ..................... I or 0
+2200 - B         20................ 2    2 ..................... II
+2300 - A         30................ 3    3 ..................... III
+2400 - F         40................ 4    4 ..................... IV
+2500 - G         50................ 5    5 ..................... V
+2600 - K         60................ 6    6 ..................... VI
+2700 - M         70................ 7
+2800 - Me        80................ 8
+                 90................ 9
+
+2900 - Star
+
+                 10 - Luyten color class a
+                 20 - Luyten color class a-f
+                 30 - Luyten color class f
+                 40 - Luyten color class f-g
+                 50 - Luyten color class g
+                 60 - Luyten color class g-k
+                 70 - Luyten color class k
+                 80 - Luyten color class k-m
+                 90 - Luyten color class m
+
+
+3000 - Extended galactic or extragalactic
+3100 - SNR Crab-like               10 - Shell            1 - Radio Pulsar
+3200 - SNR                         20 - Filled-center    2 - Type I
+3300 - Star forming region         30 - Composite        3 - Type II
+3400 - Cloud                       40 - Dark
+3500 - Nebula                      50 - Molecular
+3600 - Open star cluster           60 - Planetary
+3700 - OB association/HII region   70 - Reflection
+3800 - Herbig-Haro object          80 - Globular Cluster
+3900 - Diffuse X-ray emission
+
+4000 - White dwarf                00 -         0 -
+4100 - White dwarf DA             10 - A       1 - PNN
+4200 - White dwarf DB             20 - B       2 - PNN detached binary
+4300 - White dwarf DC             30 - C       3 - detached binary
+4400 - White dwarf DO             40 - O       4 - O
+4500 - White dwarf DZ             50 - Z       5 - Z
+4600 - White dwarf DQ             60 - Q       6 - Q
+4700 - White dwarf DX             70 - X       7 - X
+4800 - White dwarf sD             80 - V       8 - P
+4900 - White dwarf PG1159-type    90 - P       9 - H
+
+
+5000 - Cluster of galaxies        10 - Abell class &lt;0     1 - Cooling Flow
+                                  20 - Abell class 0
+                                  30 - Abell class 1
+                                  40 - Abell class 2
+                                  50 - Abell class &gt;2
+                                  60 - non-Abell
+5100 - Compact group of galaxies
+5200 - Group of galaxies
+
+5500 - X-ray background
+
+6000 - Non-active galaxy
+6100 - Dwarf Galaxy        10 - radio loud        1 - flat radio spectrum
+6200 - Spiral galaxy       20 - HII region        2 - steep radio spectrum
+6300 - Elliptical galaxy   30 - Multiple nuclei   3 - inverted radio spectrum
+6400 - Starburst galaxy    40 - Barred
+6500 - Interacting galaxy  50 - Unbarred
+6600 - Irregular galaxy    60 - Mixed
+6700 - Galaxy              70 - Nebulous region
+6800 - Lenticular galaxy
+6900 - Normal galaxy
+
+7000 - AGN Unclassified
+7100 - Seyfert         10 - radio loud           1 - flat radio spectrum
+7200 - QSO             20 - radio loud/polarized 2 - steep radio spectrum
+7300 - BL Lac          30 - radio quiet          3 - inverted radio spect
+7400 - Liner           40 - radio loud/invert sp 4 - type 1
+7500 - Radio Galaxy    50 - radio loud/flat sp   5 - type 1.5
+7600 - IR Galaxy       60 - radio loud/steep sp  6 - type 2
+7700 - OVV             70 - radio pol/invert sp
+                       80 - radio pol/flat sp
+                       90 - radio pol/steep sp
+7800 - NEL (Narrow Emission-Line) galaxy
+7900 - NLS1 (Narrow-Line Seyfert 1) galaxy
+
+8000 - Solar system object
+8100 - Planet          10 - Mercury
+                       20 - Venus
+                       30 - Earth
+                       40 - Mars
+                       50 - Jupiter
+                       60 - Saturn
+                       70 - Uranus
+                       80 - Neptune
+                       90 - Pluto
+8200 - Solar Feature   10 - Quiet Sun
+                       20 - Active Sun
+                       30 - Sunspot
+                       40 - Plage/Active Region
+                       50 - North Pole
+                       60 - South Pole
+                       70 - Equatorial Region
+                       80 - Mid-Latitude Region
+                       90 - Flare
+8300 - Asteroid        10 - Main Belt Object
+                       20 - Centaur
+                       30 - Kuiper Belt Object
+                       40 - Near-Earth
+8400 - Comet           10 - Periodic
+                       20 - Non-Periodic
+                       30 - Sun-Grazing
+8500 - Moon
+
+9000 - Unusual object
+9100 - Supernova       10 - Type I
+                       20 - Type II
+9200 - Hypernova
+9300 - Ultra-Luminous X-Ray Source (ULX)
+9400 - Supermassive Black Hole
+
+9999 - unidentified
+</pre>
+
+<hr><h3><a name="parameters">Parameters</a></h3>
+<p>
+<b><a name="class_id">Class_ID</a></b><br>
+  The number of the HEASARC object classification.
+</p><p>
+<b><a name="class_name">Class_Name</a></b><br>
+  The human-readable representation of the HEASARC object classification.
+
+</p><hr><h3><a name="contact_person">Contact Person</a></h3>
+Questions regarding the CLASS database table can be addressed to the
+<a href="https://heasarc.gsfc.nasa.gov/cgi-bin/Feedback?selected=heasarc">HEASARC Help Desk</a>.
+
+<!--================================================================-->
+<hr>
+<em>Page Author:</em> <a href="https://heasarc.gsfc.nasa.gov/cgi-bin/Feedback?selected=w3browse">Browse Software Development Team</a><br>
+<em>Last Modified:</em> Monday, 16-Sep-2024 17:26:01 EDT
+<hr>
+<!-- This is portalfooter.html -->
+<!-- Because some pages don't use the header files that include the css, the styles need to be written out here. -->
+</div>
+<!-- full-width-content-item -->
+                         <div class="divClear" style="clear:both;"></div>
+                      </div><!-- id=maincontent -->
+                   </div><!-- id="content-wrapper" -->
+		</div><!-- id="content" -->
+	<div class="divClear" style="clear:both;"></div>
+<div class="navigation">
+<div id="HEASARCfooter" style="background-color:#2E2E2E;height:20px;width:952px;border-top:none;margin:0 auto;margin-top:5px;">
+<table width="100%">
+<tbody><tr><td style="text-align:center;vertical-align:middle;">
+<p style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;margin:0;">A service of the <a href="https://science.gsfc.nasa.gov/astrophysics" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Astrophysics Science Division</a> at <a href="http://www.nasa.gov/" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">NASA/</a><a href="http://www.nasa.gov/goddard" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">GSFC</a>.</p>
+</td></tr>
+</tbody></table>
+</div>
+
+<div id="footer" style="background-color:#2E2E2E;height:98px;width:952px;border-top:2px solid #222222;margin:0 auto;">
+                <div>
+               		<a href="http://www.nasa.gov/" class="imageLink" style="display:block;float:left;"><img class="logo" style="border:0;" src="CLASS%20-%20HEASARC%20Object%20Classifications_files/nasa_header_logo1.gif" alt="NASA Logo, National Aeronautics and Space Administration" width="140" height="98"></a>
+                </div><!-- class="nasaLogo" -->
+
+                <div id="footer-signature" style="padding-left:20px;padding-top:19px;float:left;">
+               		<a href="http://www.nasa.gov/goddard/" class="imageLink" style="display:block;float:left;"><img class="logo" style="border:0;" src="CLASS%20-%20HEASARC%20Object%20Classifications_files/goddardsignature2.png" alt="Goddard Space Flight Center Signature Logo" width="172" height="68"></a>
+                </div>
+                <div class="nasafootlinks" style="float:left;height:84px;margin-left:15px;padding-left:0px;padding-top:14px;width:295px;">
+                	<ul style="list-style:none;padding:0;margin:0;">
+                		<li style="margin-bottom:2px;color:#B2B2B2;font-size:11px;font-family:Arial,Helvetica,sans-serif;">HEASARC Director: Vacant</li>
+                		<li style="margin-bottom:2px;color:#B2B2B2;font-size:11px;font-family:Arial,Helvetica,sans-serif;">NASA Official: Ryan Smallcomb</li>
+                		<li style="margin-bottom:2px;color:#B2B2B2;font-size:11px;font-family:Arial,Helvetica,sans-serif;">Web Curator: <a href="mailto:john.d.myers@nasa.gov">J.D. Myers</a></li>
+	        		<li style="margin-bottom:2px;color:#B2B2B2;font-size:11px;font-family:Arial,Helvetica,sans-serif;">Last Modified: 16-Sep-2024</li>
+                	</ul>
+                </div><!-- nasafootlinks -->
+                <div class="nasafootlinks" id="footerRight" style="float:left;height:84px;margin-left:15px;padding-left:0px;padding-top:14px;width:295px;">
+                	<ul style="list-style:none;padding:0;margin:0;">
+                		<li style="margin-bottom:2px;padding-left:12px;background:url(/Images/portal_new/rsaquo_gray.gif) no-repeat scroll 0 1px transparent;color:#B2B2B2;font-size:11px;"><a href="http://science.nasa.gov/astrophysics/" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">NASA Astrophysics</a></li>
+                		<li style="margin-bottom:2px;padding-left:12px;background:url(/Images/portal_new/rsaquo_gray.gif) no-repeat scroll 0 1px transparent;color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;"><a href="https://heasarc.gsfc.nasa.gov/docs/faq.html" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">FAQ/Comments/Feedback</a></li>
+                		<li style="margin-bottom:2px;padding-left:12px;background:url(/Images/portal_new/rsaquo_gray.gif) no-repeat scroll 0 1px transparent;color:#B2B2B2;font-size:11px;"><a href="https://heasarc.gsfc.nasa.gov/docs/outreach.html" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Education Resources</a></li>
+                		<li style="margin-bottom:2px;padding-left:12px;background:url(/Images/portal_new/rsaquo_gray.gif) no-repeat scroll 0 1px transparent;color:#B2B2B2;font-size:11px;"><a href="https://heasarc.gsfc.nasa.gov/docs/plugins.html" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Find helper applications like Adobe Acrobat</a></li>
+                		<li style="margin-bottom:2px;padding-left:12px;background:url(/Images/portal_new/rsaquo_gray.gif) no-repeat scroll 0 1px transparent;color:#B2B2B2;font-size:11px;"><a target="_blank" href="http://www.nasa.gov/about/highlights/HP_Privacy.html" style="color:#B2B2B2;font-size:11px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;">Privacy Policy &amp; Important Notices</a></li>
+                	</ul>
+                </div><!-- nasafootlinks -->
+</div><!-- id=footer -->
+</div><!-- class=navigation -->
+</div><!-- id=page -->
+</div><!-- id=page-wrapper -->
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+
+
+</body></html>
