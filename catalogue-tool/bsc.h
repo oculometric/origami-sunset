@@ -174,13 +174,15 @@ inline std::vector<CTCelestial> loadBSC(std::string base_path)
 	else
 		std::cout << "cache found, reading that instead." << std::endl;
 
-	std::cout << "generating standardised data and cross-identifying..." << std::endl;
+	std::cout << "generating standardised data..." << std::endl;
 
 	std::vector<CTCelestial> standardised_data;
 	size_t search_start = 0;
 	for (const auto& datum : data)
 	{
 		CTCelestial c;
+		if (datum.hd_num == 0)
+			continue;
 		c.harvard_revised_number = datum.hr_num;
 		c.henry_draper_number = datum.hd_num;
 		c.sao_number = datum.sao_num;
@@ -241,3 +243,15 @@ inline std::vector<CTCelestial> loadBSC(std::string base_path)
 
 	return standardised_data;
 }
+
+struct BSCComparator
+{
+	inline bool operator() (const CTCelestial& a, const CTCelestial& b)
+	{
+		if (a.henry_draper_number == 0)
+			return false;
+		if (b.henry_draper_number == 0)
+			return true;
+		return (a.henry_draper_number < b.henry_draper_number);
+	}
+};
