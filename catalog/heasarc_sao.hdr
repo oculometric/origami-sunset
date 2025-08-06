@@ -1,0 +1,75 @@
+<HEADER>
+#
+#         TABLE: heasarc_sao
+#      LOCATION: dbms1.gsfc.nasa.gov:heasarcprod
+#    TOTAL ROWS: 258944
+#
+# CREATION DATE: 2020-09-28 17:10:07
+# LAST MODIFIED: 2022-02-05 18:40:29
+#   EXGEST DATE: 2022-02-06 00:39:49
+#
+table_name = heasarc_sao
+table_description = "Smithsonian Astrophysical Observatory Star Catalog"
+table_document_url = http://heasarc.gsfc.nasa.gov/W3Browse/star-catalog/sao.html
+table_security = public
+#
+# Table Parameters
+#
+field[name] = char10  [meta.id;meta.main] (index) // SAO Catalog Designation
+field[ra] = float8:.6f_degree [pos.eq.ra;meta.main] (key) // Right Ascension
+field[proper_motion_ra] = float8:7.4f_arcsec/yr [pos.pm;pos.eq.ra]  // Annual RA Proper Motion (FK4 System)
+field[proper_motion_ra_error] = int1:2d_mas/yr [stat.error;pos.pm;pos.eq.ra]  // Standard Deviation in RA Proper Motion (FK4 System)
+field[ra_epoch] = float8:6.1f_yr [time.start;obs]  // RA Original Epoch
+field[dec] = float8:.6f_degree [pos.eq.dec;meta.main] (key) // Declination
+field[proper_motion_dec] = float8:6.3f_arcsec/yr [pos.pm;pos.eq.dec]  // Annual Declination Proper Motion (FK4 System)
+field[proper_motion_dec_error] = int1:2d_mas/yr [stat.error;pos.pm;pos.eq.dec]  // Standard Deviation of Declination Proper Motion (FK4 System)
+field[dec_epoch] = float8:6.1f_yr [time.start;obs]  // Declination Original Epoch
+field[position_error] = float8:4.2f_arcsec [stat.error;pos]  // Standard Deviation of Position at Epoch 1950.0
+field[lii] = float8:.6f_degree [pos.galactic.lon] (index) // Galactic Longitude
+field[bii] = float8:.6f_degree [pos.galactic.lat] (index) // Galactic Latitude
+field[pg_mag] = float8:4.1f  [phot.mag;em.opt] (index) // Photographic Magnitude
+field[vmag] = float8:4.1f  [phot.mag;em.opt.V] (index) // Visual Magnitude
+field[spect_type] = char3  [src.spType] (index) // Spectral Type (+++ for Composite Spectra)
+field[ref_vmag] = int1:2d  [meta.ref;phot.mag;em.opt.V]  // Reference Code for Visual Magnitude
+field[ref_star_number] = int1:2d  [meta.bib;src]  // Reference Code for Star Number and Footnotes
+field[ref_pg_mag] = int1:1d  [meta.bib;phot.mag;em.opt]  // Reference Code for Photographic Magnitude
+field[ref_proper_motion] = int1:1d  [meta.bib;pos.pm]  // Reference Code for Proper Motions
+field[ref_spect_type] = int1:1d  [meta.ref;src.spType]  // Reference Code for Spectral Type
+field[remarks] = int1:1d  [meta.code]  // Coded Remarks for Duplicity and Variability
+field[ref_source_cat] = int1:2d  [meta.bib]  // Reference Code for Source Catalog
+field[num_source_cat] = int4:5d  [meta.id]  // Number in Source Catalog
+field[dm] = char13  [meta.id.cross]  // Durchmusterung Identification (BD, CD, or CP)
+field[hd] = char6  [meta.id.cross] (index) // Henry Draper Catalog (HD or HDE) Number
+field[hd_component] = char1  [meta.code.multip]  // HD Component and Multiple Code
+field[gc] = char5  [meta.id.cross]  // Boss General Catalog (GC) Number
+field[proper_motion_ra_fk5] = float8:7.4f_arcsec/yr [pos.pm;pos.eq.ra]  // Annual RA Proper Motion (FK5 System)
+field[proper_motion_dec_fk5] = float8:6.3f_arcsec/yr [pos.pm;pos.eq.dec]  // Annual Declination Proper Motion (FK5 System)
+field[class] = int2  [src.class] (index) // Browse Object Classification
+#
+parameter_defaults = name hd ra dec vmag spect_type
+#
+# Virtual Parameters
+#
+catalog_bibcode = <I/131A/sao>
+declination = @dec
+default_search_radius = 1
+equinox = 2000
+frequency_regime = Optical
+observatory_name = STAR CATALOG
+right_ascension = @ra
+row_type = Star
+table_author = SAO
+table_priority = 5
+table_type = Object
+target_name = @name
+unique_key = name
+#
+# Relationship Definitions
+#
+relate[class] = heasarc_class(class_id)
+#
+# Data Format Specification
+#
+line[1] = name ra proper_motion_ra proper_motion_ra_error ra_epoch dec proper_motion_dec proper_motion_dec_error dec_epoch position_error lii bii pg_mag vmag spect_type ref_vmag ref_star_number ref_pg_mag ref_proper_motion ref_spect_type remarks ref_source_cat num_source_cat dm hd hd_component gc proper_motion_ra_fk5 proper_motion_dec_fk5 class
+#
+<DATA>
