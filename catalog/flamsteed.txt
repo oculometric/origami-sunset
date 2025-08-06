@@ -1,0 +1,286 @@
+File Summary:
+--------------------------------------------------------------------------------
+ FileName           Lrecl  Records   Explanations
+--------------------------------------------------------------------------------
+ReadMe                 80        .   This file
+flamsteed_f.dat       103     2936   Flamsteed catalog (Flamsteed version)
+flamsteed_l.dat       103     2935   Flamsteed catalog (Lalande version)
+flamsteed_dup.dat      37       44   Stars with duplicate entries
+flamsteed_nex.dat      66      110   Non-existent and other defective entries
+flamsteed_pos.dat      52      234   Position corrections by Baily
+flamsteed_ids.dat      24     3019   HR and HD numbers for Flamsteed's stars
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of files: flamsteed_f.dat flamsteed_l.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label   Explanations
+--------------------------------------------------------------------------------
+   1-  4  I4    ---     FNo     [1/2936] Unique star number (1)
+   6-  8  A3    ---     FCon    Flamsteed constellation abbreviation
+  10- 12  I3    ---     FNum    [1/141]? Flamsteed number (2)
+      13  A1    ---     LFlag   [*]? in Lalande, * if any field is marked * (3)
+  14- 16  A3    ---     PCon    ?Ptolemy constellation
+      17  A1    ---     PInf    [~]? ~ if 'informis' Ptolemy designation
+  18- 19  I2    ---     PNum    ?Ptolemy number
+  21- 23  A3    ---     TCon    ?Tycho constellation (4)
+  25- 26  I2    ---     TNum    ?Tycho number
+  28- 30  A3    ---     HCon    ?Hevelius constellation (5)
+  32- 33  I2    ---     HNum    ?Hevelius number
+  35- 37  A3    ---     BCon    ?Bayer constellation
+  39- 41  A3    ---     BLet    ?Bayer letter
+      43  I1    ---     BInd    ?Bayer index
+      44  A1    ---     FFlag   [:]? : if any field is marked :: (6)
+  45- 47  I3    deg     AR.d    ?Right Ascension 1690 (degrees) (7)
+  49- 50  I2    arcmin  AR.m    ?Right Ascension 1690 (minutes)
+  52- 53  I2    arcsec  AR.s    ?Right Ascension 1690 (seconds)
+  55- 57  I3    deg     DP.d    ?Polar Distance 1690 (degrees) (8)
+  59- 60  I2    arcmin  DP.m    ?Polar Distance 1690 (minutes)
+  62- 63  I2    arcsec  DP.s    ?Polar Distance 1690 (seconds)
+  65- 66  I2    ---     LO.z    [0/11]? Longitude Zodiac sign (9)
+  68- 69  I2    deg     LO.d    ?Longitude 1690 (degrees) within zodiac sign
+  71- 72  I2    arcmin  LO.m    ?Longitude 1690 (minutes)
+  74- 75  I2    arcsec  LO.s    ?Longitude 1690 (seconds)
+      77  A1    ---     LA.-    [+-]? Latitude sign (10)
+  78- 79  I2    deg     LA.d    ?Latitude 1690 (degrees)
+  81- 82  I2    arcmin  LA.m    ?Latitude 1690 (minutes)
+  84- 85  I2    arcsec  LA.s    ?Latitude 1690 (seconds)
+  87- 89  I3    arcmin  dRA.m   ?Varia. Asc. R. (minutes) (11)
+      90  A1    ---     dRA.-   [+-]? Varia. Asc. R. (sign)
+  91- 92  I2    arcsec  dRA.s   ?Varia. Asc. R. (seconds)
+  94- 95  I2    arcmin  dDP.m   ?Varia. D. a P. (minutes)
+      96  A1    ---     dDP.-   [+-]? Varia. D. a P. (sign)
+  97- 98  I2    arcsec  dDP.s   ?Varia. D. a P. (seconds)
+     100  A1    ---     sMag    [*]? * when magnitude is shared (12)
+ 101-103  A3    ---     Mag     Magnitude or magnitude range
+--------------------------------------------------------------------------------
+
+Note (1): a unique star number from 1 to 2936 added for convenience, consistent
+    between Flamsteed's and Lalande's versions (from which the entry 1894 is
+    missing).
+
+Note (2): the Flamsteed number, even though marked optional, is present for all
+    the records, except one: an entirely blank record but for the magnitude
+    between Lyn 34 and Lyn 35 in Flamsteed's version, and absent from Lalande's
+    version (and therefore without a number).
+
+Note (3): Lalande marks stars for which he has made a correction or about which
+    there is a doubt by a '*' near the affected field(s).  This version just
+    places a '*' at byte 13 in those cases.
+
+Note (4): The obsolete constellation Antinous is abbreviated 'Atn'.
+
+Note (5): The obsolete constellations Mons Menelaus and Cerberus are
+    abbreviated to 'MoM' and 'Cer' respectively.
+
+Note (6): Flamsteed marks dubious stars by :: near the affected field(s).  This
+    version just places a ':' at byte 44 in those cases.
+
+Note (7): Right ascension is measured in degrees rather than hours.  It is
+    missing for the following stars:
+    - 1 star  in Aqr (104),
+    - 1 star  in Cas (30),
+    - 7 stars in Cam (9, 17, 27, 35, 39, 55, 58),
+    - 2 stars in UMa (75, 78),
+    - 3 stars in UMi (12, 14, 18),
+    - 1 star  in Aql (29),
+    - 2 stars in Vul (2, 11),
+    - 5 stars in Cyg (5, 9, 33, 38, 79),
+    - 3 stars in Cep (13, 18, 28),
+    and incomplete (only the degrees part is given) for:
+    - 1 star  in CVn (22),
+    - 1 star  in Boo (47),
+    - 2 stars in Cyg (24, 68).
+    In the case of 24 Cyg, the degrees part of the right ascension is missing
+    its unit digit and has been omitted entirely from this version in order to
+    avoid carrying an invalid value in this field.
+
+Note (8): Polar distance (from the North pole) is used as the second equatorial
+    coordinate instead of declination.  It is missing for:
+    - 2 stars in Vul (2, 11),
+    and incomplete (seconds are missing) for:
+    - 1 star  in Cep (19).
+    Vul 2 and Vul 11 are marked as being borrowed from Hevelius, and their
+    ecliptic coordinates are present.
+
+Note (9): The degrees part of the ecliptic longitude is expressed by two
+    components: the zodiac sign (an integer from 0 to 11), and the offset in
+    degrees (in the range [0, 30[) within the zodiac sign.  Flamsteed uses
+    traditional symbols for the zodiac signs.  For convenience, Lalande uses
+    integers instead (0 for Aries, 1 for Taurus, etc.).  The degrees part of
+    the ecliptic longitude is therefore 30 * Lo.z + Lo.d.
+
+    Flamsteed and Lalande often omit the zodiac sign when it is inherited from
+    the previous record.  This version restores the missing values in order to
+    ensure that every record is self-contained.
+
+Note (10): Flamsteed and Lalande represent the sign of the ecliptic latitude by
+    the letter B (Borealis, or North) or A (Australis, or South), translated to
+    '+' and '-' in this version.
+
+    Flamsteed and Lalande often omit the latitude sign when it is inherited
+    from the previous record.  This version restores the missing values in
+    order to ensure that every record in self-contained.
+
+Note (11): The catalog specifies the variation in right ascension and polar
+    distance of the star when the ecliptic longitude increases by 1 degree.
+    As the ecliptic longitude increases over time due to the precession of the
+    equinoxes, these fields make it possible to compute updated equatorial
+    coordinates.
+
+Note (12): The magnitude value is sometimes shared by two consecutive stars.  A
+    '*' character marks the magnitude field of such stars.  This happens only
+    in three cases: 36-37 Her, 54-55 Her, and 7-8 Aql.
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: flamsteed_dup.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label   Explanations
+--------------------------------------------------------------------------------
+   1-  4  I4    ---     FNo     [1/2936] Sequence number of first star
+   6-  8  A3    ---     FCon    Constellation abbreviation of first star
+  10- 12  I3    ---     FNum    [1/141] Flamsteed number of first star
+      14  A1    ---     Flag    [=*] Flag (1)
+  16- 19  I4    ---     FNo_    [1/2936] Sequence number of second star
+  21- 23  A3    ---     FCon_   Constellation abbreviation of second star
+  25- 27  I3    ---     FNum_   [1/141] Flamsteed number of second star
+  29- 33  F5.2  arcmin  Dist    ?Distance between the stars (2)
+  35- 37  A3    ---     Con     Actual constellation of the pair (3)
+--------------------------------------------------------------------------------
+
+Note (1): An equal sign for most entries. A * here marks the entries involving
+    58 Cam, to which no right ascension is assigned in Flamsteed's catalog.
+    Baily, in "An account of the Reverend John Flamsteed", London, 1835 (Note
+    1151, p. 557), asserts without much explanation that this star is the same
+    as 30 Lyn.
+
+Note (2): Distance in arcminutes between the members of the duplicate pair,
+    based on Flamsteed's equatorial coordinates.
+
+Note (3): The actual constellation of the pair, according to Flamsteed's
+    equatorial position. This field is present only on the entry where FCon
+    matches Con.
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: flamsteed_nex.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label   Explanations
+--------------------------------------------------------------------------------
+   1-  4  I4    ---     BNum    ?Star number in Baily's corrected catalog (1)
+   6-  8  A3    ---     FCon    Flamsteed constellation abbreviation
+  10- 12  I3    ---     FNum    [1/141] Flamsteed number
+  14- 18  A5    ---     Srcs    [WBCDE.] sources for this entry (2)
+      20  A1    ---     NoEx    [*]? non-existent flag (3)
+  22- 66  A45   ---     Text    Free-form description of the issue (4)
+--------------------------------------------------------------------------------
+
+Note (1): this is the number of the star in Baily's revised British Catalogue
+    and its Notes, if any, where explanations about this star are to be found.
+    It is not necessarily the number of the star itself, which may not be part
+    of the revised catalogue.
+
+Note (2): the letters WBCDE have the following meanings:
+    W - this star has an entry in the second part of Morton Wagman's book "Lost
+        Stars" (McDonald & Woodward Publishing Company, Blacksburg, VA, 2003),
+    B - this star has an entry in Baily's Table B, p. 645 (Stars not existing:
+        being errors of computation),
+    C - this star has an entry in Baily's Table C, p. 646 (Stars observed, but
+        not existing),
+    D - this star has an entry in Baily's Table D, p. 646 (Stars not observed,
+        nor existing),
+    E - this star has an entry in Baily's Table E, p. 646 (Stars having no
+        Right Ascension).
+    The . is just a placeholder.
+
+Note (3): a * here indicates a verdict of non-existence for the star.  In most
+    cases, the star is present in one of Baily's Tables B, C, D but there are a
+    few cases discussed in Wagman where Baily is not categorical.
+
+Note (4): brief description of the issue, generally extracted from Baily's
+    Notes (starting p. 506).  Here, "observation error" means that the initial
+    value of the observation was wrong, and "error from observation" means that
+    a computation or transcription error took place during the processing of a
+    valid observation.  Designations of the form <latin num>.<arabic num>, such
+    as XIX.38 refer to Piazzi's catalog.
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: flamsteed_pos.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label   Explanations
+--------------------------------------------------------------------------------
+   1-  4  A4    ---     BNum    Star number in Baily's corrected catalog (1)
+       5  A1    ---     wNum    [*]? Warning about this entry (2)
+   6-  8  A3    ---     FCo     Flamsteed constellation abbreviation
+  10- 12  I3    ---     FNo     [1/141] Flamsteed number
+      14  A1    ---     dRA.-   [+-]? Right Ascension increment (sign)
+  15- 16  I2    deg     dRA.d   ?Right Ascension increment (degrees)
+  18- 19  I2    arcmin  dRA.m   ?Right Ascension increment (minutes)
+  21- 22  I2    arcsec  dRA.s   ?Right Ascension increment (seconds)
+      24  A1    ---     dDE.-   [+-]? Declination increment (sign)
+  25- 26  I2    deg     dDE.d   ?Declination increment (degrees)
+  28- 29  I2    arcmin  dDE.m   ?Declination increment (minutes)
+  31- 32  I2    arcsec  dDE.s   ?Declination increment (seconds)
+  34- 36  I3    deg     RA.d    ?Assigned Right Ascension 1690 (degrees)
+  38- 39  I2    arcmin  RA.m    ?Assigned Right Ascension 1690 (minutes) (3)
+  41- 42  I2    arcsec  RA.s    ?Assigned Right Ascension 1690 (seconds) (3)
+      44  A1    ---     DE.-    [+-]? Assigned Declination 1690 (sign)
+  45- 46  I2    deg     DE.d    ?Assigned Declination 1690 (degrees)
+  48- 49  I2    arcmin  DE.m    ?Assigned Declination 1690 (minutes)
+  51- 52  I2    arcsec  DE.s    ?Assigned Declination 1690 (seconds) (3)
+--------------------------------------------------------------------------------
+
+Note (1): this is the number of the star in Baily's revised British Catalogue
+    and its Notes where explanations about this star are to be found.  It is
+    not necessarily the number of the star itself, which may not be part of the
+    revised catalogue.
+
+Note (2): a * here indicates an error or omission in Baily's corrections.  The
+    file gives the missing or corrected value.  The specific cases are the
+    following.
+  - 756 Cam 27: the right ascension is missing in Flamsteed's catalog, and
+    Baily gives 80 -- -- in the revised catalog, but doesn't mention it in
+    Table F (the star is present in Table F for a correction in declination).
+  - 902 CMa 3: Baily gives -02 30 00 instead of -00 02 30 for the right
+    ascension increment.  The Notes mention the correct value.
+  - 1151 Cam 58: the right ascension is missing in Flamsteed's catalog.  Baily
+    assigns it the right ascension of Lyn 30, since he considers them the same
+    stars, but doesn't mention it in Table F.
+  - 1779 Com 33: there is an obvious typo in Flamsteed's catalog (at least the
+    edition I've used), giving a polar distance of 11 instead of 71 degrees to
+    this star.  Baily gives the correct value but doesn't mention this star in
+    Table F.
+  - 2473 Sgr 12: Baily gives -01 30 00 instead of -00 01 30 for the right
+    ascension increment.  The Notes mention the correct value.
+
+Note (3): seconds and even minutes may be omitted even when degrees are
+    specified.  When this happens, Baily writes -- in their place.
+
+--------------------------------------------------------------------------------
+
+Byte-by-byte Description of file: flamsteed_ids.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units   Label   Explanations
+--------------------------------------------------------------------------------
+   1-  4  I4    ---     FNo     [1/2936]? Unique star number (1)
+   6-  8  A3    ---     FCon    ?Flamsteed constellation abbreviation (1)
+  10- 12  I3    ---     FNum    [1/141]? Flamsteed number (1)
+      13  A1    ---     NoId    [*]? Unidentified entry flag (2)
+  14- 17  I4    ---     HR      [1/9110]? HR number
+  19- 24  I6    ---     HD      [1/272150]? HD number
+--------------------------------------------------------------------------------
+
+Note (1): these fields are empty on lines containing additional matches for the
+    current star.
+
+Note (2): a '*' here indicates that this catalog entry has no identification,
+    has not been associated with an existing star.
+
+--------------------------------------------------------------------------------
+
+History:
+
+  * 2020-07-05: new revised edition.
+
+================================================================================

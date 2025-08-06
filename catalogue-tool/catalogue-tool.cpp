@@ -114,12 +114,18 @@ int main()
 	auto hip_data = loadHIP("../catalog");
 	auto mes_data = loadMes("../catalog");
 	auto ngc_data = loadNGC("../catalog");
-	
-	auto hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
-	// TODO: bayer
-	// TODO: flamsteed
-	// TODO: merge
+	// TODO: read Flam
+	// TODO: read BSC
 
+	auto hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
+	// TODO: merge HD/HIP with BSC
+	// TODO: merge HD/HIP/BSC with Flam
+	// TODO: properly decode object types in NGC/Mes
+	// TODO: merge NGC with Mes
+	// TODO: merge HD/HIP/BSC/Flam with NGC/Mes
+	// TODO: assign constellations for objects which do not have them
+	// TODO: generate output file
+	
 	auto constellations = loadConstellations("../catalog");
 
 	generated_file.close();
