@@ -89,12 +89,12 @@ struct FlamIDComparator
 
 inline std::vector<CTFlamEntry> readDat_Flam(std::string path)
 {
-	std::cout << "reading flamsteed catalog... " << std::endl;
+	std::cout << "    reading flamsteed catalog... " << std::endl;
 
 	std::ifstream file(path);
 	if (!file.is_open())
 	{
-		std::cout << "failed!" << std::endl;
+		std::cout << "    failed!" << std::endl;
 		return { };
 	}
 
@@ -103,7 +103,7 @@ inline std::vector<CTFlamEntry> readDat_Flam(std::string path)
 	size_t total_rows = 0;
 	std::string last_modified;
 
-	std::cout << "    reading entries..." << std::endl;
+	std::cout << "        reading entries..." << std::endl;
 
 	std::vector<CTFlamEntry> entries;
 	while (true)
@@ -182,18 +182,18 @@ inline std::vector<CTFlamEntry> readDat_Flam(std::string path)
 
 	file.close();
 
-	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
+	std::cout << "    done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
 
 inline std::vector<CTFlamIDEntry> readDat_FlamIDs(std::string path)
 {
-	std::cout << "reading flamsteed ID catalog... " << std::endl;
+	std::cout << "    reading flamsteed ID catalog... " << std::endl;
 
 	std::ifstream file(path);
 	if (!file.is_open())
 	{
-		std::cout << "failed!" << std::endl;
+		std::cout << "    failed!" << std::endl;
 		return { };
 	}
 
@@ -202,7 +202,7 @@ inline std::vector<CTFlamIDEntry> readDat_FlamIDs(std::string path)
 	size_t total_rows = 0;
 	std::string last_modified;
 
-	std::cout << "    reading entries..." << std::endl;
+	std::cout << "        reading entries..." << std::endl;
 
 	std::vector<CTFlamIDEntry> entries;
 	while (true)
@@ -229,7 +229,7 @@ inline std::vector<CTFlamIDEntry> readDat_FlamIDs(std::string path)
 
 	file.close();
 
-	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
+	std::cout << "    done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
 
@@ -243,10 +243,10 @@ inline std::vector<CTCelestial> loadFlam(std::string base_path)
 	{
 		data = readDat_Flam(base_path + "/flamsteed_f.dat");
 		writeCache(data, base_path + "/cache/flam.dat");
-		std::cout << "wrote cache file to " << base_path << "/cache/flam.dat" << std::endl;
+		std::cout << "    wrote cache file to " << base_path << "/cache/flam.dat" << std::endl;
 	}
 	else
-		std::cout << "cache found, reading that instead." << std::endl;
+		std::cout << "    cache found, reading that instead." << std::endl;
 	
 	std::vector<CTFlamIDEntry> data_id;
 	readCache(data_id, base_path + "/cache/flam_id.dat");
@@ -254,12 +254,12 @@ inline std::vector<CTCelestial> loadFlam(std::string base_path)
 	{
 		data_id = readDat_FlamIDs(base_path + "/flamsteed_ids.dat");
 		writeCache(data_id, base_path + "/cache/flam_id.dat");
-		std::cout << "wrote cache file to " << base_path << "/cache/flam_id.dat" << std::endl;
+		std::cout << "    wrote cache file to " << base_path << "/cache/flam_id.dat" << std::endl;
 	}
 	else
-		std::cout << "cache found, reading that instead." << std::endl;
+		std::cout << "    cache found, reading that instead." << std::endl;
 
-	std::cout << "generating standardised data and cross-identifying..." << std::endl;
+	std::cout << "    generating standardised data and cross-identifying..." << std::endl;
 	sort(data.begin(), data.end(), FlamComparator());
 	sort(data_id.begin(), data_id.end(), FlamIDComparator());
 

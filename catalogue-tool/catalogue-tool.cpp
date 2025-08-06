@@ -18,9 +18,11 @@ using namespace std;
 // FIXME: check the merging algorithms!!
 std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const std::vector<CTCelestial>& hip)
 {
+	std::cout << "merging HD and HIP catalog data..." << std::endl;
+	std::cout << "    " << hd.size() << " HD entries will be merged with " << hip.size() << " HIP entries" << std::endl;
 	std::vector<CTCelestial> merged;
 
-	std::vector<bool> consumed;
+	std::cout << "    sorting and preparing data... ";
 	std::vector<CTCelestial> hip_sorted;
 	hip_sorted.insert(hip_sorted.begin(), hip.begin(), hip.end());
 	sort(hip_sorted.begin(), hip_sorted.end(), HIPComparator());
@@ -29,7 +31,9 @@ std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const s
 	sort(hd_sorted.begin(), hd_sorted.end(), HIPComparator());
 
 	size_t remaining = hip.size();
+	std::vector<bool> consumed;
 	consumed.insert(consumed.begin(), remaining, false);
+	std::cout << "done." << std::endl;
 
 	size_t classi_mismatches = 0;
 	size_t spect_mismatches = 0;
@@ -38,7 +42,8 @@ std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const s
 	size_t hd_complete = 0;
 	size_t hip_complete = 0;
 	size_t hip_search_start = 0;
-	std::cout << "    " << "0% complete";
+	std::cout << "    merging cataloges..." << std::endl;
+	std::cout << "        0% complete";
 	for (CTCelestial hd_s : hd_sorted)
 	{
 		if (remaining != 0)
@@ -84,8 +89,9 @@ std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const s
 		size_t tmp = complete_percent;
 		complete_percent = (hd_complete + hip_complete) * 100 / (hd.size() + hip.size());
 		if (complete_percent > tmp)
-			std::cout << "\r    " << complete_percent << "% complete";
+			std::cout << "\r        " << complete_percent << "% complete";
 	}
+	std::cout << std::endl << "        copying remaining HIP entries..." << std::endl;
 	if (remaining > 0)
 	{
 		for (int i = 0; i < hip_sorted.size(); i++)
@@ -102,19 +108,24 @@ std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const s
 			size_t tmp = complete_percent;
 			complete_percent = (hd_complete + hip_complete) * 100 / (hd.size() + hip.size());
 			if (complete_percent > tmp)
-				std::cout << "\r    " << complete_percent << "% complete";
+				std::cout << "\r        " << complete_percent << "% complete";
 		}
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << "    done." << std::endl;
+	std::cout << "    " << classi_mismatches << " browse object classifcation mismatches discovered." << std::endl;
+	std::cout << "    " << spect_mismatches << " spectral type mismatches discovered." << std::endl;
+	std::cout << "done (produced " << merged.size() << " merged entries)." << std::endl;
 
 	return merged;
 }
 
 std::vector<CTCelestial> mergeFlam_BSC(const std::vector<CTCelestial>& flam, const std::vector<CTCelestial>& bsc)
 {
+	std::cout << "merging flamsteed and BSC catalog data..." << std::endl;
+	std::cout << "    " << flam.size() << " flamsteed entries will be merged with " << bsc.size() << " BSC entries" << std::endl;
 	std::vector<CTCelestial> merged;
 
-	std::vector<bool> consumed;
+	std::cout << "    sorting and preparing data... ";
 	std::vector<CTCelestial> flam_sorted;
 	flam_sorted.insert(flam_sorted.begin(), flam.begin(), flam.end());
 	sort(flam_sorted.begin(), flam_sorted.end(), BSCComparator());
@@ -123,7 +134,9 @@ std::vector<CTCelestial> mergeFlam_BSC(const std::vector<CTCelestial>& flam, con
 	sort(bsc_sorted.begin(), bsc_sorted.end(), BSCComparator());
 
 	size_t remaining = bsc.size();
+	std::vector<bool> consumed;
 	consumed.insert(consumed.begin(), remaining, false);
+	std::cout << "done." << std::endl;
 
 	size_t hr_mismatches = 0;
 	size_t flamsteed_mismatches = 0;
@@ -132,7 +145,8 @@ std::vector<CTCelestial> mergeFlam_BSC(const std::vector<CTCelestial>& flam, con
 	size_t flam_complete = 0;
 	size_t bsc_complete = 0;
 	size_t bsc_search_start = 0;
-	std::cout << "    " << "0% complete";
+	std::cout << "    merging cataloges..." << std::endl;
+	std::cout << "        0% complete";
 	for (CTCelestial flam_s : flam_sorted)
 	{
 		if (remaining != 0)
@@ -190,8 +204,9 @@ std::vector<CTCelestial> mergeFlam_BSC(const std::vector<CTCelestial>& flam, con
 		size_t tmp = complete_percent;
 		complete_percent = (flam_complete + bsc_complete) * 100 / (flam.size() + bsc.size());
 		if (complete_percent > tmp)
-			std::cout << "\r    " << complete_percent << "% complete";
+			std::cout << "\r        " << complete_percent << "% complete";
 	}
+	std::cout << std::endl << "        copying remaining BSC entries..." << std::endl;
 	if (remaining > 0)
 	{
 		for (int i = 0; i < bsc_sorted.size(); i++)
@@ -211,10 +226,13 @@ std::vector<CTCelestial> mergeFlam_BSC(const std::vector<CTCelestial>& flam, con
 			size_t tmp = complete_percent;
 			complete_percent = (flam_complete + bsc_complete) * 100 / (flam.size() + bsc.size());
 			if (complete_percent > tmp)
-				std::cout << "\r    " << complete_percent << "% complete";
+				std::cout << "\r        " << complete_percent << "% complete";
 		}
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << "    done." << std::endl;
+	std::cout << "    " << hr_mismatches << " harvard revised critical mismatches discovered." << std::endl;
+	std::cout << "    " << flamsteed_mismatches << " flamsteed designation mismatches discovered." << std::endl;
+	std::cout << "done (produced " << merged.size() << " merged entries)." << std::endl;
 
 	return merged;
 }
@@ -225,17 +243,22 @@ int main()
 
 	generated_file << "// this file was generated by the origami-sunset star catalog analyis tool." << endl;
 
-	auto hd_data = loadHD("../catalog");
-	auto hip_data = loadHIP("../catalog");
-	auto flam_data = loadFlam("../catalog");
-	auto bsc_data = loadBSC("../catalog");
-	//// TODO: read SAO
-	auto mes_data = loadMes("../catalog");
-	auto ngc_data = loadNGC("../catalog");
+	std::vector<CTCelestial> hd_hip_merged;
+	std::vector<CTCelestial> flam_bsc_merged;
+	{
+		auto hd_data = loadHD("../catalog");
+		auto hip_data = loadHIP("../catalog");
+		auto flam_data = loadFlam("../catalog");
+		auto bsc_data = loadBSC("../catalog");
+		//// TODO: read SAO
+		auto mes_data = loadMes("../catalog");
+		auto ngc_data = loadNGC("../catalog");
+		
+		hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
+		flam_bsc_merged = mergeFlam_BSC(flam_data, bsc_data);
+	}
+	// FIXME: fix up spectral type text, magnitudes for hip and others
 
-	auto hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
-	auto flam_bsc_merged = mergeFlam_BSC(flam_data, bsc_data);
-	//// TODO: merge Flam with BSC
 	//// TODO: merge HD/HIP with Flam/BSC
 	//// TODO: properly decode object types in NGC/Mes
 	//// TODO: merge NGC with Mes
@@ -244,7 +267,8 @@ int main()
 	//// TODO: generate output file
 	//
 	//auto constellations = loadConstellations("../catalog");
-
+	
+	size_t data_size = (hd_hip_merged.size() + flam_bsc_merged.size()) * sizeof(CTCelestial);
 	generated_file.close();
 
 	return 0;

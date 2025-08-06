@@ -75,7 +75,7 @@ static inline std::string fixPath(std::string path)
 template<typename T>
 inline void writeCache(const std::vector<T>& data, std::string path)
 {
-	system(("mkdir " + fixPath(path)).c_str());
+	system(("mkdir > nul 2>&1" + fixPath(path)).c_str());
 	std::ofstream file(path, std::ios::binary);
 	if (!file.is_open())
 		return;

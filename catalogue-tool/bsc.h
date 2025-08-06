@@ -70,12 +70,12 @@ struct CTBSCEntry
 
 inline std::vector<CTBSCEntry> readDat_BSC(std::string path)
 {
-	std::cout << "reading BSC catalog... " << std::endl;
+	std::cout << "    reading BSC catalog... " << std::endl;
 
 	std::ifstream file(path);
 	if (!file.is_open())
 	{
-		std::cout << "failed!" << std::endl;
+		std::cout << "    failed!" << std::endl;
 		return { };
 	}
 
@@ -84,7 +84,7 @@ inline std::vector<CTBSCEntry> readDat_BSC(std::string path)
 	size_t total_rows = 0;
 	std::string last_modified;
 
-	std::cout << "    reading entries..." << std::endl;
+	std::cout << "        reading entries..." << std::endl;
 
 	std::vector<CTBSCEntry> entries;
 	while (true)
@@ -155,7 +155,7 @@ inline std::vector<CTBSCEntry> readDat_BSC(std::string path)
 
 	file.close();
 
-	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
+	std::cout << "    done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
 
@@ -169,12 +169,12 @@ inline std::vector<CTCelestial> loadBSC(std::string base_path)
 	{
 		data = readDat_BSC(base_path + "/bsc.dat");
 		writeCache(data, base_path + "/cache/bsc.dat");
-		std::cout << "wrote cache file to " << base_path << "/cache/bsc.dat" << std::endl;
+		std::cout << "    wrote cache file to " << base_path << "/cache/bsc.dat" << std::endl;
 	}
 	else
-		std::cout << "cache found, reading that instead." << std::endl;
+		std::cout << "    cache found, reading that instead." << std::endl;
 
-	std::cout << "generating standardised data..." << std::endl;
+	std::cout << "    generating standardised data..." << std::endl;
 
 	std::vector<CTCelestial> standardised_data;
 	size_t search_start = 0;

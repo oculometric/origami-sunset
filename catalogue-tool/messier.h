@@ -30,12 +30,12 @@ struct CTMesEntry
 
 inline std::vector<CTMesEntry> readTDat_Mes(std::string path)
 {
-	std::cout << "reading messier catalog..." << std::endl;
+	std::cout << "    reading messier catalog..." << std::endl;
 
 	std::ifstream file(path);
 	if (!file.is_open())
 	{
-		std::cout << "failed!" << std::endl;
+		std::cout << "    failed!" << std::endl;
 		return { };
 	}
 
@@ -46,10 +46,10 @@ inline std::vector<CTMesEntry> readTDat_Mes(std::string path)
 	if (!findTDatDataStart(file, line, total_rows, last_modified))
 		return { };
 
-	std::cout << "    detected " << total_rows << " total rows" << std::endl;
-	std::cout << "    last modified " << last_modified << std::endl;
+	std::cout << "        detected " << total_rows << " total rows" << std::endl;
+	std::cout << "        last modified " << last_modified << std::endl;
 
-	std::cout << "    reading entries..." << std::endl;
+	std::cout << "        reading entries..." << std::endl;
 
 	std::vector<CTMesEntry> entries;
 	size_t complete_percent = 0;
@@ -81,12 +81,12 @@ inline std::vector<CTMesEntry> readTDat_Mes(std::string path)
 		size_t tmp = complete_percent;
 		complete_percent = entries.size() * 100 / total_rows;
 		if (complete_percent > tmp)
-			std::cout << "\r    " << complete_percent << "% complete";
+			std::cout << "\r        " << complete_percent << "% complete";
 	}
 	std::cout << std::endl;
 
 	file.close();
-	std::cout << "done (read " << entries.size() << " entries)." << std::endl;
+	std::cout << "    done (read " << entries.size() << " entries)." << std::endl;
 	return entries;
 }
 
@@ -100,12 +100,12 @@ inline std::vector<CTCelestial> loadMes(std::string base_path)
 	{
 		data = readTDat_Mes(base_path + "/heasarc_messier.tdat");
 		writeCache(data, base_path + "/cache/mes.dat");
-		std::cout << "wrote cache file to " << base_path << "/cache/mes.dat" << std::endl;
+		std::cout << "    wrote cache file to " << base_path << "/cache/mes.dat" << std::endl;
 	}
 	else
-		std::cout << "cache found, reading that instead." << std::endl;
+		std::cout << "    cache found, reading that instead." << std::endl;
 
-	std::cout << "generating standardised data..." << std::endl;
+	std::cout << "    generating standardised data..." << std::endl;
 	std::vector<CTCelestial> standardised_data;
 	for (const auto& datum : data)
 	{
