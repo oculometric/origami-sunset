@@ -122,7 +122,8 @@ inline std::vector<CTHIPEntry> readTDat_HIP(std::string path)
 	size_t complete_percent = 0;
 	while (true)
 	{
-		file.getline((char*)line.c_str(), 1024, '\n');
+		memset((char*)line.c_str(), 0, line.size());
+		file.getline((char*)line.c_str(), line.size(), '\n');
 		if (strcmp(line.c_str(), "<END>") == 0 || strlen(line.c_str()) == 0)
 			break;
 

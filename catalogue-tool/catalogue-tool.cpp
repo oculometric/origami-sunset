@@ -9,6 +9,7 @@
 #include "messier.h"
 #include "ngc2000.h"
 #include "constel.h"
+#include "flamsteed.h"
 
 using namespace std;
 
@@ -67,7 +68,7 @@ std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const s
 					consumed[i] = true;
 					hip_complete++;
 					remaining--;
-					if (hip_search_start = i)
+					if (hip_search_start == i)
 						hip_search_start = i + 1;
 					break;
 				}
@@ -112,21 +113,22 @@ int main()
 
 	auto hd_data = loadHD("../catalog");
 	auto hip_data = loadHIP("../catalog");
+	auto flam_data = loadFlam("../catalog");
+	//// TODO: read BSC
+	//// TODO: read SAO
 	auto mes_data = loadMes("../catalog");
 	auto ngc_data = loadNGC("../catalog");
-	// TODO: read Flam
-	// TODO: read BSC
 
-	auto hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
-	// TODO: merge HD/HIP with BSC
-	// TODO: merge HD/HIP/BSC with Flam
-	// TODO: properly decode object types in NGC/Mes
-	// TODO: merge NGC with Mes
-	// TODO: merge HD/HIP/BSC/Flam with NGC/Mes
-	// TODO: assign constellations for objects which do not have them
-	// TODO: generate output file
-	
-	auto constellations = loadConstellations("../catalog");
+	//auto hd_hip_merged = mergeHD_HIP(hd_data, hip_data);
+	//// TODO: merge Flam with BSC
+	//// TODO: merge HD/HIP with Flam/BSC
+	//// TODO: properly decode object types in NGC/Mes
+	//// TODO: merge NGC with Mes
+	//// TODO: merge HD/HIP/BSC/Flam with NGC/Mes
+	//// TODO: assign constellations for objects which do not have them
+	//// TODO: generate output file
+	//
+	//auto constellations = loadConstellations("../catalog");
 
 	generated_file.close();
 

@@ -41,5 +41,8 @@
     <ClInclude Include="star.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="flamsteed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

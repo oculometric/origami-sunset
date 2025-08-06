@@ -9,7 +9,6 @@ enum CTCelesetialType
 	GALAXY,
 	NEBULA,
 	STAR_CLUSTER,
-
 };
 
 struct CTCelestial
@@ -20,7 +19,7 @@ struct CTCelestial
 	std::pair<double, double> gal_lat_long;
 	std::pair<double, double> proper_motion;
 	std::string spectral_type;
-	uint16_t classification;
+	uint16_t classification = 0;
 	CTCelesetialType object_type;
 	float distance = 0;
 	float visual_magnitude = 0;
@@ -30,8 +29,10 @@ struct CTCelestial
 	uint16_t ngc2000_number = 0;
 	uint8_t messier_number = 0;
 	uint16_t ic_number = 0;
+	uint16_t harvard_revised_number = 0;
 	std::string bayer_identifier;
 	uint16_t flamsteed_number = 0;
+	char flamsteed_constel[3] = { 0 };
 	bool is_multiple = 0;
 	uint8_t is_variable = 0;
 	std::vector<std::string> descriptions;
