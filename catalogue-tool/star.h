@@ -30,6 +30,7 @@ struct CTCelestial
 	uint8_t messier_number = 0;
 	uint16_t ic_number = 0;
 	uint16_t harvard_revised_number = 0;
+	uint32_t sao_number = 0;
 	std::string bayer_identifier;
 	uint16_t flamsteed_number = 0;
 	char flamsteed_constel[3] = { 0 };

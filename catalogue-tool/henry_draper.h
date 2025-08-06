@@ -116,6 +116,7 @@ inline std::vector<CTCelestial> loadHD(std::string base_path)
 	{
 		CTCelestial c;
 		std::string corrected_name = datum.name;
+		corrected_name.resize(20);
 		corrected_name.insert(2, 1, ' ');
 		c.names.push_back(corrected_name);
 		c.henry_draper_number = datum.hd_number;
@@ -123,6 +124,7 @@ inline std::vector<CTCelestial> loadHD(std::string base_path)
 		c.gal_lat_long = { datum.bii, datum.lii };
 		c.classification = datum.classi;
 		c.spectral_type = datum.spectral_type;
+		c.spectral_type.resize(4);
 		c.visual_magnitude = datum.pgmag; // FIXME: should this be vmag??
 		c.is_multiple = datum.multiplicity_flag;
 		c.is_variable = datum.variability_flag;

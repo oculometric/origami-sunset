@@ -111,9 +111,11 @@ inline std::vector<CTCelestial> loadMes(std::string base_path)
 	{
 		CTCelestial c;
 		std::string mes_name = datum.name;
+		mes_name.resize(6);
 		c.names.push_back(mes_name);
 		c.messier_number = stoi(mes_name.substr(2));
 		std::string alt_name = datum.alt_name;
+		alt_name.resize(11);
 		c.names.push_back(alt_name);
 		if (alt_name.substr(0, 2) == "IC")
 			c.ic_number = stoi(alt_name.substr(2));
@@ -123,7 +125,9 @@ inline std::vector<CTCelestial> loadMes(std::string base_path)
 		c.gal_lat_long = { datum.bii, datum.lii };
 		c.classification = datum.classi;
 		c.visual_magnitude = datum.vmag;
-		c.descriptions.push_back(datum.notes);
+		std::string notes = datum.notes;
+		notes.resize(50);
+		c.descriptions.push_back(notes);
 		memcpy(c.constellation, datum.constell, 3);
 		// TODO: object type based on datum.object_type
 		//c.object_type = STAR;

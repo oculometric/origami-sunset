@@ -22,6 +22,8 @@ field_start = field_end + 1; field_end = line.find('|', field_start)
 #define DATA_EXISTS(d, c) d = (line[field_start] == c); field_start++
 #define DATA_STR(d, n) memcpy(d, line.substr(field_start, n).c_str(), std::min(sizeof(d), (size_t)n)); field_start += n
 #define DATA_FLOAT(d, n) try { d = std::stof(line.substr(field_start, n)); } catch (std::exception _) { d = 0; }; field_start += n
+#define DATA_CHAR(d) d = line[field_start]; field_start++
+
 
 inline bool findTDatDataStart(std::ifstream& file, std::string& line, size_t& total_rows, std::string& last_modified)
 {

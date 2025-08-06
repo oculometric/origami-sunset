@@ -44,5 +44,8 @@
     <ClInclude Include="flamsteed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bsc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

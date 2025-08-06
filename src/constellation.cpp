@@ -15,7 +15,7 @@ static float getDegrees(ORIStar::RightAscension ra)
 
 static float getDegrees(ORIStar::Declination dec)
 {
-    return (float)(dec.degrees) + ((((float)dec.minutes * 0.0166666666667) + ((float)dec.seconds * 0.0002777777778f)) * csign(dec.degrees));
+    return (float)(dec.degrees) + ((((float)dec.minutes * 0.0166666666667f) + ((float)dec.seconds * 0.0002777777778f)) * csign(dec.degrees));
 }
 
 float angleDistance(float a)

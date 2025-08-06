@@ -113,6 +113,7 @@ inline std::vector<CTCelestial> loadNGC(std::string base_path)
 	{
 		CTCelestial c;
 		std::string name = datum.name;
+		name.resize(9);
 		c.names.push_back(name);
 		if (name.substr(0, 2) == "IC")
 			c.ic_number = stoi(name.substr(3));
@@ -124,7 +125,9 @@ inline std::vector<CTCelestial> loadNGC(std::string base_path)
 		c.visual_magnitude = datum.app_mag;
 		memcpy(c.constellation, datum.constellation, 3);
 		for (int i = 0; i < 3; i++) c.constellation[i] = toupper(c.constellation[i]);
-		c.descriptions.push_back(datum.description);
+		std::string desc = datum.description;
+		desc.resize(53);
+		c.descriptions.push_back(desc);
 		// TODO: object type based on datum.source_type
 		//c.object_type = STAR;
 		standardised_data.push_back(c);

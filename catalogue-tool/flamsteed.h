@@ -281,14 +281,14 @@ inline std::vector<CTCelestial> loadFlam(std::string base_path)
 		if (datum.bayer_constel[0] != 0 && datum.bayer_constel[0] != ' ')
 		{
 			std::string ident;
-			ident.insert(0, datum.bayer_constel, 3);
-			ident += ' ';
-			ident += datum.bayer_letter;
+			ident.insert(0, datum.bayer_letter, 3);
 			if (datum.bayer_index != 0)
 			{
 				ident += ' ';
 				ident += std::to_string((int)datum.bayer_index);
 			}
+			ident += ' ';
+			ident.insert(ident.size(), datum.bayer_constel, 3);
 			c.bayer_identifier = ident;
 		}
 		for (size_t i = search_start; i < data_id.size(); i++)
@@ -307,6 +307,8 @@ inline std::vector<CTCelestial> loadFlam(std::string base_path)
 				break;
 			}
 		}
+		memcpy(c.constellation, datum.constel, 3);
+		for (int i = 0; i < 3; i++) c.constellation[i] = toupper(c.constellation[i]);
 		c.object_type = STAR;
 
 		standardised_data.push_back(c);

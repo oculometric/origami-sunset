@@ -245,6 +245,7 @@ inline std::vector<CTCelestial> loadHIP(std::string base_path)
 	{
 		CTCelestial c;
 		std::string corrected_name = datum.name;
+		corrected_name.resize(11);
 		c.names.push_back(corrected_name);
 		c.henry_draper_number = datum.hd_id;
 		c.hipparcos_number = datum.hip_number;
@@ -252,6 +253,7 @@ inline std::vector<CTCelestial> loadHIP(std::string base_path)
 		c.gal_lat_long = { datum.bii, datum.lii };
 		c.classification = datum.classi;
 		c.spectral_type = datum.spect_type;
+		c.spectral_type.resize(12);
 		c.visual_magnitude = datum.vmag;
 		// TODO: which magnitudes?
 		// TODO: multiplicity?
