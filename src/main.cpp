@@ -11,13 +11,15 @@
 #include "../inc/colours.h"
 #include "../inc/font8x16.h"
 #include "../inc/constellation.h"
+#include "../inc/input.h"
 
-#include "../catalogue-tool/constel.h"
-#include "../catalogue-tool/ngc2000.h"
-
-std::vector<CTNGCEntry> ngc_data;
-std::map<std::string, std::vector<std::pair<float, float>>> boundary_data;
-std::map<std::string, std::pair<float, float>> center_data;
+ORIInputAction pan_right;
+ORIInputAction pan_left;
+ORIInputAction pan_up;
+ORIInputAction pan_down;
+ORIInputAction zoom_in;
+ORIInputAction zoom_out;
+ORIInputAction toggle_overlay;
 
 void setup()
 {
@@ -41,21 +43,16 @@ void setup()
 
     ORISerial::printLn("bonk");
 
-    ngc_data = readTDat_NGC("catalog/heasarc_ngc2000.tdat");
-    boundary_data = readBounds("catalog/bound_in_20.txt");
-    center_data = readCenters("catalog/centers_20.txt");
-    center_data.erase("SER");
+    pan_right = ORIInput::registerAction("pan_right", GLFW_KEY_RIGHT);
+    pan_left = ORIInput::registerAction("pan_left", GLFW_KEY_LEFT);
+    pan_up = ORIInput::registerAction("pan_up", GLFW_KEY_UP);
+    pan_down = ORIInput::registerAction("pan_down", GLFW_KEY_DOWN);
+
+    zoom_in = ORIInput::registerAction("zoom_in", ']');
+    zoom_out = ORIInput::registerAction("zoom_out", '[');
+
+    toggle_overlay = ORIInput::registerAction("toggle_overlay", '\'');
 }
-
-int16_t box_x = 0;
-int16_t box_y = 0;
-int16_t box_sx = 1;
-int16_t box_sy = 1;
-
-int16_t box_dx = 1;
-int16_t box_dy = 1;
-
-int flash_counter = 0;
 
 float camera_right = 247.0f;
 float camera_up = -24.8f;
@@ -104,35 +101,40 @@ void loop()
 
     ORIScreen::blit();
     delay(16);
-#if defined(OPENGL)
-    glfwPollEvents();
-    if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera_right -= camera_fov / 160.0f;
-    if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera_right += camera_fov / 160.0f;
-    if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_UP) == GLFW_PRESS)
-        camera_up += camera_fov / 160.0f;
-    if (glfwGetKey(ORIScreen::getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera_up -= camera_fov / 160.0f;
-    if (glfwGetKey(ORIScreen::getWindow(), '.') == GLFW_PRESS)
-        camera_fov += 1.0f;
-    if (glfwGetKey(ORIScreen::getWindow(), ',') == GLFW_PRESS)
-        camera_fov -= 1.0f;
-    /*if (glfwGetKey(ORIScreen::getWindow(), 'L') == GLFW_PRESS)
-        show_overlay = !show_overlay;*/
+    ORIInput::updateActionStates();
 
-    if (camera_fov < 5.0f)
-        camera_fov = 5.0f;
-    if (camera_fov > 120.0f)
-        camera_fov = 120.0f;
+    if (ORIInput::wasActionPressed(toggle_overlay))
+        show_overlay = !show_overlay;
+
+    float horizontal_velocity = (float)std::min(ORIInput::getActionHoldCount(pan_left), (size_t)32)
+        - (float)std::min(ORIInput::getActionHoldCount(pan_right), (size_t)32);
+    horizontal_velocity /= 32.0f;
+    horizontal_velocity = sqrt(abs(horizontal_velocity)) * csign(horizontal_velocity);
+    camera_right += (camera_fov / 160.0f) * horizontal_velocity;
     if (camera_right < 0.0f)
         camera_right += 360.0;
     if (camera_right > 360.0f)
         camera_right -= 360.0f;
+
+    float vertical_velocity = (float)std::min(ORIInput::getActionHoldCount(pan_up), (size_t)32)
+        - (float)std::min(ORIInput::getActionHoldCount(pan_down), (size_t)32);
+    vertical_velocity /= 32.0f;
+    vertical_velocity = sqrt(abs(vertical_velocity)) * csign(vertical_velocity);
+    camera_up += (camera_fov / 160.0f) * vertical_velocity;
     if (camera_up < -100.0f)
         camera_up = -100.0f;
     if (camera_up > 100.0f)
         camera_up = 100.0f;
+
+    float fov_velocity = (float)std::min(ORIInput::getActionHoldCount(zoom_out), (size_t)16)
+        - (float)std::min(ORIInput::getActionHoldCount(zoom_in), (size_t)16);
+    fov_velocity /= 16.0f;
+    camera_fov += fov_velocity;
+    if (camera_fov < 5.0f)
+        camera_fov = 5.0f;
+    if (camera_fov > 120.0f)
+        camera_fov = 120.0f;
+#if defined(OPENGL)
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> diff = stop - start;
     //ORISerial::print((uint32_t)((1.0f / diff.count())), 10);
