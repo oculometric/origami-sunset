@@ -72,6 +72,30 @@ struct ORIConstellation
         : name(_name), stars(_stars), edges(_edges)
         { }*/
 };
+
+struct ORIStar2
+{
+    const char* names; // multiple names separated by '%'
+    const char* description;
+    uint8_t constellation_index; // 0 - 87
+    uint8_t internal_type; // star, multi-star, var-star, star cluster, galaxy, nebula, etc
+
+    uint16_t classification;
+    double ra_dec[2];
+    double lat_long[2];
+    float distance;
+    float visual_magnitude;
+
+    const char byr_ident[10];
+    const char flm_ident[6];
+    uint32_t hd_ident;
+    uint32_t hip_ident;
+    uint16_t ngc_ident;
+    uint8_t mes_ident;
+    uint16_t ic_ident;
+    uint16_t hr_ident;
+    uint32_t sao_ident;
+};
 #pragma pack(pop)
 
 class ORIConstellationViewer

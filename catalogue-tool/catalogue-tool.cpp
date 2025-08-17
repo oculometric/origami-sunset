@@ -42,7 +42,7 @@ std::vector<CTCelestial> mergeHD_HIP(const std::vector<CTCelestial>& hd, const s
 	size_t hd_complete = 0;
 	size_t hip_complete = 0;
 	size_t hip_search_start = 0;
-	std::cout << "    merging cataloges..." << std::endl;
+	std::cout << "    merging catalogs..." << std::endl;
 	std::cout << "        0% complete";
 	for (CTCelestial hd_s : hd_sorted)
 	{
@@ -145,7 +145,7 @@ std::vector<CTCelestial> mergeFlam_BSC(const std::vector<CTCelestial>& flam, con
 	size_t flam_complete = 0;
 	size_t bsc_complete = 0;
 	size_t bsc_search_start = 0;
-	std::cout << "    merging cataloges..." << std::endl;
+	std::cout << "    merging catalogs..." << std::endl;
 	std::cout << "        0% complete";
 	for (CTCelestial flam_s : flam_sorted)
 	{
